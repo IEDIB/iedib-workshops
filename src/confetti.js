@@ -157,10 +157,4 @@
            }
        };
    
-   })();
-   
-   var instance = new window.Confetti(document.getElementById('container'));
-   
-   document.getElementById("play").addEventListener("click", function(evt){
-       instance.play();
-   });
+   })(); 

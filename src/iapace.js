@@ -1,5 +1,6 @@
 window.IAPace = window.IAPace || {};
 (function (M) {
+    var HISTORY_LEN  = 4;
     /**
      * Utility functions
      * @param  url 
@@ -108,8 +109,9 @@ window.IAPace = window.IAPace || {};
             found.s += score;
             found.s2 += score * score;
             found.h.push(score);
-            while (found.h.length > 3) {
-                found.h.pop();
+            //most recent score history
+            while (found.h.length > HISTORY_LEN) {
+                found.h.shift();
             }
         },
         // Level has 0=beginner, 1=learner, 2=advanced learner, 3=advanced
@@ -122,14 +124,38 @@ window.IAPace = window.IAPace || {};
                 var mean = frame.s / (1.0 * n);
                 var std = Math.sqrt(Math.abs(frame.s2 / n - mean * mean));
                 if (mean == 0) {
-                    return 0;
+                    return 1;
                 }
                 var cv = std / mean;
-                var nivell = Math.floor(0.4 * mean);
-                if (nivell > 0 && cv > 0.75) {
+                // Take into account recent history vector
+                if(frame.h.length >= HISTORY_LEN) {
+                    var mean2 = 0;
+                    var std2 = 0;
+                    var nhl = frame.h.length; 
+                    for(var i=0; i < nhl; i++) {
+                        var val = frame.h[i]
+                        mean2 += val;
+                        std2 += val*val;
+                    }
+                    mean2 = mean2 / (1.0*nhl);
+                    std2 = Math.sqrt(std2 / (1.0*nhl) - mean2*mean2);
+                    if(mean2 > 0) {
+                        cv2 = std2/mean2;
+                        if(cv2 < 0.75) {
+                            //consistent results obtained in recent history (sigues optimista)
+                            var calc = 0.1*mean+0.9*mean2;
+                            mean = calc>mean? calc:mean;
+                        }
+                    }  
+                }
+
+                // Compute nivell
+                var nivell = Math.round(0.4 * mean);
+                if (nivell > 1 && cv > 0.75) {
                     nivell -= 1;
                 }
-                return nivell;
+
+                return nivell>0? nivell:1;
             } else {
                 return frame.dl;
             }
