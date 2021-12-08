@@ -143,12 +143,16 @@
            },
            play: function() {
                this.initConfetti();
+               this.canvas.style["display"]= "";
                var self = this;
                var loop = function() {
                    self.render();
                    if(self.confetti.length) {
                        window.requestAnimationFrame(loop); 
-                   } 
+                   } else {
+                       //Simulation ended
+                       this.canvas.style["display"]= "none";
+                   }
                }; 
                window.requestAnimationFrame(loop);
            },

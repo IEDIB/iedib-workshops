@@ -95,7 +95,7 @@ if(allcss.length) {
 }
 
 // Monolithic file with everything
-target = path.join(dst, "all.min.js");
+target = path.join(dst, "all_iboc.min.js");
 fs.writeFileSync(target, all, {encoding:'utf8'});
 console.log("> written " + target);
 
@@ -106,12 +106,13 @@ if(allcss.length) {
     all = `
     !function(){if(document.getElementById("sd_css_all")){return;}; var l = '${allcss}'; var s = document.createElement('style'); s.type = 'text/css'; s.innerHTML = l; s.id="sd_css_all"; document.getElementsByTagName('head')[0].appendChild(s);}();
     ` 
-    target = path.join(dst, "allcss.min.js");
+    target = path.join(dst, "allcss_iboc.min.js");
     fs.writeFileSync(target, all, {encoding:'utf8'});
     console.log("> written " + target);
 }
 
 // Bundles by categories
+/*
 Object.keys(categories).forEach( (catname) => {
     var listCode = categories[catname].code;
     var listCss= categories[catname].css;
@@ -127,3 +128,4 @@ Object.keys(categories).forEach( (catname) => {
     fs.writeFileSync(target, code, {encoding:'utf8'});
     console.log("> written " + target);
 });
+*/
