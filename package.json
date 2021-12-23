@@ -28,6 +28,7 @@
     "handlebars": "^4.7.7",
     "js-beautify": "^1.14.0",
     "js-yaml": "^2.0.5",
+    "socketio": "^1.0.0",
     "uglify-js": "^2.4.24"
   }
 }

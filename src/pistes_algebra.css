@@ -1,0 +1,40 @@
+.pistes {
+  border-collapse: collapse;  
+}
+.pistes_vert {
+    border: 1px solid gray;
+    width: 100px;
+    height:100px;
+    writing-mode: vertical-rl;
+text-orientation: mixed;
+}
+.pistes_header > td {
+    border: 1px solid gray;
+    width: 20px;
+    background-color: lightgray;
+    text-orientation: upright;
+}
+.pistes_pista0 > td {
+    border: 1px solid gray;
+    width: 100px;
+    height:20px;
+    background-color: lightcoral;
+}
+.pistes_pista1 > td {
+    border: 1px solid gray;
+    width: 100px;
+    height:20px;
+    background-color: lightblue;
+}
+.pistes_pista2 > td {
+    border: 1px solid gray;
+    width: 100px;
+    height:20px;
+    background-color: greenyellow;
+}
+.pistes_pista3 > td {
+    border: 1px solid gray;
+    width: 100px;
+    height:20px;
+    background-color: yellow;
+}
