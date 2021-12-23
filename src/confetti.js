@@ -145,6 +145,12 @@
                this.initConfetti();
                this.canvas.style["display"]= "";
                var self = this;
+               //TODO Play sound on start!
+               var audio = new Audio('https://piworld.es/iedib/assets/sounds/magical-hit.mp3');
+               audio.addEventListener("canplaythrough", function(event) { 
+                  audio.play();
+               });
+
                var loop = function() {
                    self.render();
                    if(self.confetti.length) {
