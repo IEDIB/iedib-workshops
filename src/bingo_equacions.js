@@ -476,6 +476,7 @@
                 //resume timer
                 wrapper.timer.play();
             } else {
+                wrapper.timer.stop();
                 //no es pot cantar línia dos pics
                 liniaBtn.prop("disabled", true);
                 bingoBtn.prop("disabled", true);
