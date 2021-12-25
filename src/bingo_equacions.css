@@ -1,8 +1,20 @@
 
 .cartro_cell {
+    display: table-cell;
+    border: 1px solid black;
     width: 40px;
     height: 40px;
+    vertical-align: middle;
+}
+.cartro_celledit {
     cursor: grab;
+}
+.cartro_cell > p {
+    margin: auto;
+    text-align: center;
+}
+.cartro_row {
+   display: table-row;
 }
 .cartro_cellvoid {
    background-color: grey;
@@ -19,4 +31,17 @@
  }
  .cartro_cellwrong {
     background-color:lightcoral; 
+ }
+ .bingo_cartro {
+     display: table; 
+     border: 1px solid gray;
+     border-radius: 4px; 
+ }
+ .bingo_panell {
+    border-radius: 20px;
+    border: 2px dotted darkgoldenrod;
+ }
+ .bingo_scroll {
+     height: 100px;
+     overflow-y: auto;
  }
