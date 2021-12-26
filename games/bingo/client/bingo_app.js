@@ -80,10 +80,10 @@ var RoomsCtrl = function($scope, $location, cfg, socket) {
     $scope.joinroom = function(r) { 
         console.log("Attempting join room", r);
         var cuser = cfg.getUser();
-        socket.emit("rooms:join", {id: r.id, idUser: cuser.idUser, nick: cuser.nick}, function(result){
+        socket.emit("rooms:join", {id: r.id, idUser: cuser.idUser, nick: cuser.nick}, function(success, msg){
             console.log("RESULT");
-            if(!result) {
-                alert("Cannot join");
+            if(!success) {
+                alert(msg);
             } else {
                 var url = '/waiting/'+r.id;
                 console.log("going to ", url);
@@ -94,7 +94,11 @@ var RoomsCtrl = function($scope, $location, cfg, socket) {
     $scope.newroom = function() { 
         //emit the room created
         var cuser = cfg.getUser();
-        socket.emit("rooms:create", {nick: cuser.nick, idUser: cuser.idUser});
+        socket.emit("rooms:create", {nick: cuser.nick, idUser: cuser.idUser}, function(success, msg) {
+            if(!success) {
+                alert(msg);
+            } 
+        });
     };
 
 };
@@ -108,7 +112,12 @@ var WaitingCtrl = function($scope, $location, $route, cfg, socket) {
     console.log($route);
     $scope.idRoom = $route.current.params.idroom;
     $scope.participants = [];
-    socket.emit("rooms:participants", {id: $scope.idRoom});
+    socket.emit("rooms:participants", {id: $scope.idRoom}, function(success, msg) {
+        if(!success) {
+            alert(msg);
+            $location.path("/rooms");
+        }
+    });
     socket.on("rooms:participants", function(participants) {
         if(participants == "invalid_room") {
             console.log("invalid room");
