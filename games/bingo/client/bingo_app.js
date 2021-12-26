@@ -50,9 +50,21 @@
 
 var app = angular.module("bingoApp", ['ngRoute', 'bingoApp.services']);
  
-app.run(function($rootScope) {
-    $rootScope.$on("$locationChangeStart", function(event, next, current) { 
-        console.log("Route change", event, next, current);  
+app.run(function($rootScope, cfg, socket) {
+    $rootScope.$on('$routeChangeStart', function($event, current, previous) { 
+        // ... you could trigger something here ...
+        //$event.preventDefault();
+        console.log($event);
+        console.log(current);
+        console.log(previous);
+
+        //Detect room leave events
+        if(previous!=null && (previous.$$route.controller=="WaitingCtrl" || previous.$$route.controller=="PlayingCtrl")
+        && (current.$$route.controller!="WaitingCtrl" && current.$$route.controller!="PlayingCtrl")) {
+            var idRoom = previous.pathParams.idroom;
+            socket.emit("rooms:leave", {id:idRoom});
+        }
+        
     });
 });
 
