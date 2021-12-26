@@ -31,5 +31,8 @@
     "socket.io": "^1.7.4",
     "socketio": "^1.0.0",
     "uglify-js": "^2.4.24"
+  },
+  "devDependencies": {
+    "@types/socket.io": "^3.0.2"
   }
 }

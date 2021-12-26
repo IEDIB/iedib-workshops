@@ -15,7 +15,7 @@
         <script type="text/ng-template" id="landing.html"> 
             <div class="view">
                 Nick <input id="nickname" ng-model="nick" type="text"/>
-                <button id="submit_nickname" ng-click="onsubmit">Envia</button>
+                <button id="submit_nickname" ng-click="onsubmit()">Envia</button>
             </div>
         </script>
 
@@ -24,16 +24,21 @@
             <div class="view">
                 Sales actives ....
                 <br>
-                XXX creada per YYYY el ZZZZ <button id="submit_joinroom">Unir-se</button>
+                <ul>
+                <li ng-repeat="r in rooms">Sala {{r.id}} creada per {{r.user}} el {{r.created}} <button id="submit_joinroom" ng-click="joinroom(r)">Unir-se</button></li>
+                </ul>
                 <br>
-                <button id="create_room">Crear nova sala</button>
+                <button id="create_room" ng-click="newroom()">Crear nova sala</button>
             </div>
         </script>
 
         <script type="text/ng-template" id="waiting.html"> 
             <div class="view">
-                <p>Estau en la sala ...</p>
-                <p>Jugadors: ...</p>
+                <p>Estau en la sala <span ng-bind="idRoom"></span></p>
+                <p>Jugadors: </p>
+                <ul>    
+                    <li ng-repeat="p in participants"><span ng-bind="p.nick" title="p.idUser"></span></li>
+                </ul>
             
                 <p>Tria un cartró</p>
                 <div id="cartro_panell">
