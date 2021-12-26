@@ -19,7 +19,7 @@ io.on("connection", (socket) => {
     
     socket.on("rooms:create", function(k, cb) {
         console.log(k);
-        if(Object.keys[rooms].length > MAX_ROOMS_ACTIVE) {
+        if(Object.keys(rooms).length > MAX_ROOMS_ACTIVE) {
             cb && cb(false, "No hi pot haver més de "+ MAX_ROOMS_ACTIVE + " actives.");
             return;
         }

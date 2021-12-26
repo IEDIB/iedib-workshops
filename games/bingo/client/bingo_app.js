@@ -50,7 +50,11 @@
 
 var app = angular.module("bingoApp", ['ngRoute', 'bingoApp.services']);
  
-
+app.run(function($rootScope) {
+    $rootScope.$on("$locationChangeStart", function(event, next, current) { 
+        console.log("Route change", event, next, current);  
+    });
+});
 
 
 var LandingCtrl = function($scope, $location, cfg, socket) {
