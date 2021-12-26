@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bingo d'equacions!</title>
+        <meta charset="utf8">
+        <link rel="stylesheet" href="./bingo_equacions.css">
+        <!--fonts-->
+        <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.2/angular-route.min.js" integrity="sha512-5zOAub3cIpqklnKmM05spv4xttemFDlbBrmRexWiP0aWV8dlayEGciapAjBQWA7lgQsxPY6ay0oIUVtY/pivXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="./socket.io.min.js"></script>
+    </head>
+    <body ng-app="bingoApp">
+
+        <script type="text/ng-template" id="landing.html"> 
+            <div class="view">
+                Nick <input id="nickname" ng-model="nick" type="text"/>
+                <button id="submit_nickname" ng-click="onsubmit">Envia</button>
+            </div>
+        </script>
+
+        
+        <script type="text/ng-template" id="rooms.html"> 
+            <div class="view">
+                Sales actives ....
+                <br>
+                XXX creada per YYYY el ZZZZ <button id="submit_joinroom">Unir-se</button>
+                <br>
+                <button id="create_room">Crear nova sala</button>
+            </div>
+        </script>
+
+        <script type="text/ng-template" id="waiting.html"> 
+            <div class="view">
+                <p>Estau en la sala ...</p>
+                <p>Jugadors: ...</p>
+            
+                <p>Tria un cartró</p>
+                <div id="cartro_panell">
+
+                </div>
+                <p>Esperant que el propietari de la sala iniciï la partida ...</p>
+                <button id="notice_startgame">Avisa als participants i comença la partida</button>
+                <p>Esperant confirmacions ... La partida començarà en breu ...</p>
+            </div>
+        </script>
+   
+
+        <script type="text/ng-template" id="playing.html"> 
+            <div class="view">
+                <p>Estau en la sala ...</p>
+                <p>Jugadors: ...</p>
+            
+                <div>
+                    <p>Queden ...  bolles</p>
+                </div>
+
+               
+                <div id="cartro_panell">
+
+                </div> 
+                <button>Sortir</button>
+                <button>Cantar linia</button>
+                <button>Cantar bingo</button>
+                
+            </div>
+        </script>
+
+
+
+        <div ng-view>
+        </div> 
+
+                    
+        <script src="./bingo_app.js"></script>
+        <script src="./bingo_equacions.js"></script>
+    </body>
+</html>

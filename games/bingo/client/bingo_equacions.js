@@ -7,6 +7,7 @@
  */
 
 (function () {
+   // var socket = io("http://localhost:3000");
 
     var findVoice = function (lang, voices) {
         lang = (lang || "").toLowerCase();
