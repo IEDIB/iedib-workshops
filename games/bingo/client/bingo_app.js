@@ -48,7 +48,7 @@
 	
 
 
-var app = angular.module("bingoApp", ['ngRoute', 'bingoApp.services']);
+var app = angular.module("bingoApp", ['ngRoute', 'bingoApp.services', 'angular-growl']);
  
 app.run(function($rootScope, cfg, socket) {
     $rootScope.$on('$routeChangeStart', function($event, current, previous) { 
@@ -68,8 +68,12 @@ app.run(function($rootScope, cfg, socket) {
     });
 });
 
+app.config(['growlProvider', function(growlProvider) {
+    growlProvider.onlyUniqueMessages(false);
+    growlProvider.globalTimeToLive(5000);
+}]);
 
-var LandingCtrl = function($scope, $location, cfg, socket) {
+var LandingCtrl = function($scope, $location, cfg, socket, growl) {
 
     var cuser = cfg.getUser();
     $scope.nick = cuser? cuser.nick : "";
@@ -83,7 +87,7 @@ var LandingCtrl = function($scope, $location, cfg, socket) {
 
 };
 
-var RoomsCtrl = function($scope, $location, cfg, socket) {
+var RoomsCtrl = function($scope, $location, cfg, socket, growl) {
  
     if(!cfg.getUser()) {
         $location.path("/");
@@ -99,7 +103,7 @@ var RoomsCtrl = function($scope, $location, cfg, socket) {
         socket.emit("rooms:join", {id: r.id, idUser: cuser.idUser, nick: cuser.nick}, function(success, msg){
             console.log("RESULT");
             if(!success) {
-                alert(msg);
+                growl.error(msg);
             } else {
                 var url = '/waiting/'+r.id;
                 console.log("going to ", url);
@@ -112,14 +116,14 @@ var RoomsCtrl = function($scope, $location, cfg, socket) {
         var cuser = cfg.getUser();
         socket.emit("rooms:create", {nick: cuser.nick, idUser: cuser.idUser}, function(success, msg) {
             if(!success) {
-                alert(msg);
+                growl.error(msg);
             } 
         });
     };
 
 };
 
-var WaitingCtrl = function($scope, $location, $route, cfg, socket) {
+var WaitingCtrl = function($scope, $location, $route, cfg, socket, growl) {
 
     if(!cfg.getUser()) {
         $location.path("/");
@@ -130,7 +134,7 @@ var WaitingCtrl = function($scope, $location, $route, cfg, socket) {
     $scope.participants = [];
     socket.emit("rooms:participants", {id: $scope.idRoom}, function(success, msg) {
         if(!success) {
-            alert(msg);
+            growl.error(msg);
             $location.path("/rooms");
         }
     });
@@ -146,7 +150,7 @@ var WaitingCtrl = function($scope, $location, $route, cfg, socket) {
 
 };
 
-var PlayingCtrl = function($scope, $location, $route, cfg, socket) {
+var PlayingCtrl = function($scope, $location, $route, cfg, socket, growl) {
 
     if(!cfg.getUser()) {
         $location.path("/");
@@ -156,11 +160,15 @@ var PlayingCtrl = function($scope, $location, $route, cfg, socket) {
     
 
 };
+LandingCtrl.$inject = ["$scope", "$location", "cfg", "socket", "growl"];
+RoomsCtrl.$inject = ["$scope", "$location", "cfg", "socket", "growl"];
+WaitingCtrl.$inject = ["$scope", "$location", "$route", "cfg", "socket", "growl"];
+PlayingCtrl.$inject = ["$scope", "$location", "$route", "cfg", "socket", "growl"];
 
-app.controller("LandingCtrl", ["$scope", "$location", "cfg", "socket", LandingCtrl]);
-app.controller("RoomsCtrl", ["$scope", "$location", "cfg", "socket", RoomsCtrl]);
-app.controller("WaitingCtrl", ["$scope", "$location", "$route", "cfg", "socket", WaitingCtrl]);
-app.controller("PlayingCtrl", ["$scope", "$location", "$route", "cfg", "socket", PlayingCtrl]);
+app.controller("LandingCtrl", LandingCtrl);
+app.controller("RoomsCtrl", RoomsCtrl);
+app.controller("WaitingCtrl", WaitingCtrl);
+app.controller("PlayingCtrl", PlayingCtrl);
 
 app.config(['$routeProvider',
     function config($routeProvider) {
