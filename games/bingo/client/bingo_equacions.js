@@ -126,7 +126,7 @@
     var shuffle = function (aList) {
         //The Fisher-Yates algorithm
         var cloned = listClone(aList);
-        for (let i = cloned.length - 1; i > 0; i--) {
+        for (var i = cloned.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
             var temp = cloned[i];
             cloned[i] = cloned[j];
