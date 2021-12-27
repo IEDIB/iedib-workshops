@@ -67,12 +67,7 @@ app.run(function($rootScope, cfg, socket) {
         
     });
 });
-
-app.config(['growlProvider', function(growlProvider) {
-    growlProvider.onlyUniqueMessages(false);
-    growlProvider.globalTimeToLive(5000);
-}]);
-
+ 
 var LandingCtrl = function($scope, $location, cfg, socket, growl) {
 
     var cuser = cfg.getUser();
@@ -170,8 +165,8 @@ app.controller("RoomsCtrl", RoomsCtrl);
 app.controller("WaitingCtrl", WaitingCtrl);
 app.controller("PlayingCtrl", PlayingCtrl);
 
-app.config(['$routeProvider',
-    function config($routeProvider) {
+app.config(['$routeProvider', 'growlProvider',
+    function config($routeProvider, growlProvider) {
       $routeProvider.
         when('/', {
           templateUrl: 'landing.html',
@@ -190,5 +185,9 @@ app.config(['$routeProvider',
             controller: 'PlayingCtrl'
         }).
         otherwise('/');
+
+        growlProvider.onlyUniqueMessages(false);
+        growlProvider.globalTimeToLive(5000);
+        growlProvider.globalPosition('top-right');
     }
 ]);
