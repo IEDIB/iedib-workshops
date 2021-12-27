@@ -48,7 +48,8 @@
 
                 </div>
                 <p>Esperant que el propietari de la sala iniciï la partida ...</p>
-                <button id="notice_startgame">Avisa als participants i comença la partida</button>
+                <button id="notice_startgame" ng-click="onSubmitStart()" ng-if="canSubmitStart">
+                    Avisa als participants i comença la partida</button>
                 <p>Esperant confirmacions ... La partida començarà en breu ...</p>
             </div>
         </script>
@@ -56,20 +57,23 @@
 
         <script type="text/ng-template" id="playing.html"> 
             <div class="view">
-                <p>Estau en la sala ...</p>
+                <p>Estau en la sala <span ng-bind="idRoom"></span><p>
                 <p>Jugadors: ...</p>
             
                 <div>
-                    <p>Queden ...  bolles</p>
+                    <p>Queden <span ng-bind="remaining"></span> bolles</p>
+                    <ul>
+                        <li ng-repeat="b in balls"><span ng-bind="b.latex"></span></li>
+                    </ul>
                 </div>
 
                
                 <div id="cartro_panell">
-
+                    TODO POSAR AQUÍ EL CARTRO
                 </div> 
-                <button>Sortir</button>
-                <button>Cantar linia</button>
-                <button>Cantar bingo</button>
+                <button ng-click="sortirJoc()">Sortir del joc</button>
+                <button ng-disabled="gameOver" ng-click="testLinia()">Cantar linia</button>
+                <button ng-disabled="gameOver" ng-click="testBingo()">Cantar bingo</button>
                 
             </div>
         </script>
@@ -79,7 +83,7 @@
         <div ng-view>
         </div> 
 
-        <script src="./angular-growl-notifications.js"></script> 
+        <script src="./angular-growl.min.js"></script> 
         <script src="./bingo_app.js"></script>
         <script src="./bingo_equacions.js"></script>
     </body>
