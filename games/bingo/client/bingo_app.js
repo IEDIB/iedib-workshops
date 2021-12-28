@@ -2,24 +2,48 @@
  angular.module('bingoApp.services', [])
     .value('version', '0.1')
     .factory('socket', function($rootScope) { 
-    var socket = io.connect("http://127.0.0.1:3000"); 
+    var socket = io.connect("http://127.0.0.1:3000");
+    var socketLocal = ioClientLocal.connect();
+    var mode = {method: 'remote'};
+    if(!socket.connected) {
+        console.log("Socket not connected. Offline mode");
+        mode.method = 'offline';
+    } else {
+        socket.on("connect_error", function() {
+            console.log("connect error");
+            mode.method = 'offline'; 
+        });
+    }
     return {
         on: function(eventName, callback) {
-            socket.on(eventName, function() {
+            var actualSocket = socket;
+            if(!socket.connected || mode.method === 'offline') {
+                console.log("Offline mode");
+                actualSocket = socketLocal;
+            }
+            actualSocket.on(eventName, function() {
                 var args = arguments;
                 $rootScope.$apply(function() {
-                    callback.apply(socket, args);
+                    callback.apply(actualSocket, args);
                 });
             });
         },
         emit: function(eventName, data, callback) {
-            socket.emit(eventName, data, function() {
+            var actualSocket = socket;
+            if(!socket.connected || mode.method === 'offline') {
+                console.log("Offline mode");
+                $rootScope.$emit('method', 'offline');
+                actualSocket = socketLocal;
+            }
+            actualSocket.emit(eventName, data, function() {
                 var args = arguments;
+                /*
                 $rootScope.$apply(function() {
                     if (callback) {
-                        callback.apply(socket, args);
+                        callback.apply(actualSocket, args);
                     }
                 });
+                */
             })
         }
     };
@@ -49,8 +73,50 @@
 
 
 var app = angular.module("bingoApp", ['ngRoute', 'bingoApp.services', 'angular-growl']);
+
+app.directive('bingoHeader', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        headerInfo: '=info'
+      },
+      template:  '<div class="bingo_header">'+
+      '<div class="user_ball">'+
+      '     <h1 ng-bind="headerInfo.initial"></h1>'+
+      '</div>'+
+      ' <div>'+
+      '     <h1>B I N G O - A P P</h1>'+
+      '     <h2 ng-bind="headerInfo.typeName"></h2>'+
+      ' </div>'+
+      '<div class="room_exit" ng-if="headerInfo.id">'+
+      '     <p ng-click="headerInfo.exit()">EXIT</p>'+
+      '     <p ng-bind="headerInfo.id"></p>'+
+      ' </div>'+
+      '</div>'
+    };
+});
  
+app.directive('bingoFooter', function() {
+    return {
+      restrict: 'E', 
+      template: '<div class="bingo_footer">'+
+                '<p>(c) Josep Mulet (2021-2022)</p>'+
+                '</div>'
+    };
+});
+
 app.run(function($rootScope, cfg, socket, growl, $location) {
+
+    //Detect offline operation
+    $rootScope.$on("method", function(evt, value) {
+        console.log("Rootscope event ", evt, value);
+        if(value === "offline" && !$rootScope.methodNotified) {
+            $rootScope.methodNotified = true;
+            growl.error("Vaja, no hi ha connexió. Estàs en mode fora de línia.", {ttl: -1});
+        }
+    });
+
+
     $rootScope.$on('$routeChangeStart', function($event, current, previous) { 
         // ... you could trigger something here ...
         //$event.preventDefault();
