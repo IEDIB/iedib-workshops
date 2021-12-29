@@ -26,11 +26,25 @@ io.on("connection", (socket) => {
             cb && cb(false, "No hi pot haver més de "+ MAX_ROOMS_ACTIVE + " actives.");
             return;
         }
+        // Every user can only create up to 1 room
+        let userHasRoom = false;
+        const lRooms = Object.values(rooms);
+        for(let i=0, len=lRooms.length; i<len; i++) {
+            if(lRooms[i].idUser == k.idUser) {
+                userHasRoom = true;
+                break;
+            }
+        }
+        if(userHasRoom) { 
+            cb && cb(false, "Cada usuari pot crear com a molt una sala.");
+            return;
+        }
         var roomId = "r" + Math.random().toString(32).substring(2);
         joined[roomId] = [];
         // Added type of room (the application decides which type of Bingo wants)
-        rooms[roomId] = {id: roomId, idUser: k.idUser, nick: k.nick, type: k.type || 'eq1', created: new Date()};
+        rooms[roomId] = {id: roomId, idUser: k.idUser, nick: k.nick, type: k.type || 'eqn', created: new Date()};
         io.emit("rooms:available", Object.values(rooms));
+        socket.emit("rooms:info", rooms[k.id]);
         cb && cb(true, "S'ha creat la sala amb id "+roomId);
     });
 
@@ -192,7 +206,7 @@ io.on("connection", (socket) => {
             // Retake game
             bingo.play();
 
-        }, LINEA_CHECK_TIME*1000);
+        }, BINGO_CHECK_TIME*1000);
        
     });
 

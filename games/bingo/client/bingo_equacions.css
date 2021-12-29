@@ -1,4 +1,106 @@
+/** Window and views **/
+body {
+    margin: auto;
+    background-color: rgb(45, 40, 40);
+    color: rgb(237, 237, 237);
+}
+.text-bright {
+    color: white;
+}
+.text-dim {
+    color: lightgray;
+    font-size: 0.9em;
+}
+.btn-round { 
+    border-radius: 50%; 
+}
+.btn-sm.btn-round { 
+    width: 30px;
+    height: 30px;
+}
+.btn-round > span {
+    vertical-align:text-bottom; 
+    font-weight:bold;
+}
+.views {
+    margin: auto;
+    max-width: 700px;
+}
+.bingo_header {
+    margin: 20px auto; 
+    text-align: center;
+    vertical-align: middle;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+.bingo_header > div {
+    display: inline-block;
+    margin: 0 20px;
+} 
+.user_ball {
+    margin: 0 10px;
+    width: 46px;
+    height: 46px;
+    display: inline-block;
+    background-color: darkred;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    vertical-align: text-bottom;
+    text-align: center;
+    font-size: 1.5em;
+} 
+.user_ball > h2::first-letter {  
+    text-transform: uppercase;
+}
+.view {
+    position: relative;
+    min-height: 500px;
+    margin: 15px;
+}
+.view.view_nick {
+    margin: auto;
+}
+.view.view_rooms ul {
+    list-style-type: none;
+}
+.view.view_rooms ul > li {
+    padding: 10px;
+    border-radius: 5px;
+}
+.view.view_rooms ul > li:nth-child(odd) {
+    background-color:rgb(58, 55, 55);
+}
+.view.view_wait {
 
+}
+.bingo_footer {
+    position: fixed;
+    bottom: 0;
+    left: 40px;
+    color: lightgray;
+    font-size: 0.8em;
+    background-color: rgb(45, 40, 40);
+}
+.view_nick.form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+.inline-form {
+    margin-top: 90px;
+    text-align: center;
+}
+.inline-form > * {
+    display: inline-block;
+    max-width: 60%;
+}
+
+.players_container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/** Bingo items - Cartó **/
 .cartro_cell {
     display: table-cell;
     border: 1px solid black;

@@ -3,11 +3,10 @@
     <head>
         <title>Bingo d'equacions!</title>
         <meta charset="utf8">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/katex.min.css" integrity="sha512-vJqxkZ+Sugf/6WRlpcxN01qVfX/29hF6qc33eHF1va3NgoV+U+wCi+uTAsQ10sDoGyBxHLdaHvGwDlV3yVYboA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="stylesheet" href="./bingo_equacions.css">
-        <link rel="stylesheet" href="./angular-growl.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+      
         <!--fonts-->
+
+        <!--js-->
         <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.2/angular-route.min.js" integrity="sha512-5zOAub3cIpqklnKmM05spv4xttemFDlbBrmRexWiP0aWV8dlayEGciapAjBQWA7lgQsxPY6ay0oIUVtY/pivXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -15,84 +14,94 @@
         <script src="./socket.io.min.js"></script>
         <script src="./fake-socket.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+    
+        <!--styles-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/katex.min.css" integrity="sha512-vJqxkZ+Sugf/6WRlpcxN01qVfX/29hF6qc33eHF1va3NgoV+U+wCi+uTAsQ10sDoGyBxHLdaHvGwDlV3yVYboA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="./angular-growl.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+        <link rel="stylesheet" href="./bingo_equacions.css">
+       
+    
     </head>
     <body ng-app="bingoApp">
         <div growl></div>
  
 
         <script type="text/ng-template" id="landing.html"> 
-            <div class="view">
-                <bingo-header ng-model="header"></bingo-header>
-                Nick <input id="nickname" ng-model="nick" type="text"/>
-                <button id="submit_nickname" ng-click="onsubmit()">Envia</button>
+            <div class="view view_nick">
+                <bingo-header info="headerInfo"></bingo-header>
+
+                <div class="inline-form">
+                       <label for="nickname">Nick</label>  
+                        <input class="form-control" id="nickname" ng-model="nick" ng-keyup="onKeyUp($event)" type="text"/>
+                        <button class="btn btn-primary col-xs-2" id="submit_nickname" ng-click="onsubmit()">Envia</button>
+                </div>
+
                 <bingo-footer></bingo-footer>
             </div>
         </script>
 
         
         <script type="text/ng-template" id="rooms.html"> 
-            <div class="view">
-                <bingo-header ng-model="header"></bingo-header>
-                Sales actives ....
+            <div class="view view_rooms">
+                <bingo-header info="headerInfo"></bingo-header>
+                <br> 
+                <h3 class="text-bright">Sales actives  {{workingMode}}
+                    <button ng-show="!isOffline" class="btn btn-sm btn-success btn-round" id="create_room" title="Crear una nova sala" ng-click="newroom()">
+                        <span>+</span> </button>
+                    </h3>
                 <br>
                 <ul>
-                <li ng-repeat="r in rooms">Sala {{r.id}} creada per {{r.user}} el {{r.created}} <button id="submit_joinroom" ng-click="joinroom(r)">Unir-se</button></li>
+                <li ng-repeat="r in rooms">Sala <b class="text-bright" ng-bind="r.id"></b> <button class="btn btn-sm btn-primary" id="submit_joinroom" ng-click="joinroom(r)">Unir-se</button> <br>
+                    <p class="text-dim">Propietari: {{r.nick}} - Creada: {{r.created | date: 'dd/MM/yy HH:m:s'}}</p> </li>
                 </ul>
                 <br>
-                <button id="create_room" ng-click="newroom()">Crear nova sala</button>
+               
                 <bingo-footer></bingo-footer>
             </div>
         </script>
 
-        <script type="text/ng-template" id="waiting.html"> 
-            <div class="view">
-                <bingo-header ng-model="header"></bingo-header>
-                <p>Estau en la sala <span ng-bind="idRoom"></span></p>
-                <p>Jugadors: </p>
-                <ul>    
-                    <li ng-repeat="p in participants"><span ng-bind="p.nick" title="p.idUser"></span></li>
-                </ul>
+        <script type="text/ng-template" id="game.html"> 
+            <div class="view view_game">
+                <bingo-header info="headerInfo"></bingo-header>
+              
             
-                <p>Tria un cartró</p>
+                <h3 class="text-bright" ng-show="!bingoStarted">Tria un cartró</h3>
                 <div id="cartro_panell">
 
                 </div>
-                <p>Esperant que el propietari de la sala iniciï la partida ...</p>
-                <button id="notice_startgame" ng-click="onSubmitStart()" ng-if="canSubmitStart">
-                    Avisa als participants i comença la partida</button>
-                <p>Esperant confirmacions ... La partida començarà en breu ...</p>
+
+                <br> 
+                <div ng-show="!bingoStarted">
+                    <button class="btn btn-primary" ng-show="isOffline || currentRoom.idUser==headerInfo.idUser" id="notice_startgame" 
+                    ng-click="onSubmitStart()" ng-if="canSubmitStart">
+                        Començar la partida
+                    </button>
+
+                    <p ng-show="!isOffline && currentRoom.idUser!=headerInfo.idUser">
+                        Esperant que el propietari de la sala iniciï la partida ...
+                    </p> 
+
+                </div>
+                
+                <br>
+                <h3 class="text-bright">Jugadors (<span ng-bind="participants.length"></span>)</h3>
+                <div class="players_container">    
+                    <div class="user_ball" ng-repeat="p in participants">
+                        <span ng-bind="p.nick | initials" title="{{p.nick}} - {{p.idUser}}"></span>
+                    </div>
+                </div>
             </div>
             <bingo-footer></bingo-footer>
         </script>
-   
+    
 
-        <script type="text/ng-template" id="playing.html"> 
-            <div class="view">
-                <p>Estau en la sala <span ng-bind="idRoom"></span><p>
-                <p>Jugadors: ...</p>
-            
-                <div>
-                    <p>Queden <span ng-bind="remaining"></span> bolles</p>
-                    <ul>
-                        <li ng-repeat="b in balls"><span ng-bind="b.latex"></span></li>
-                    </ul>
-                </div>
+        <div growl inline="true" reference="1"></div>
 
-               
-                <div id="cartro_panell">
-                    TODO POSAR AQUÍ EL CARTRO
-                </div> 
-                <button ng-click="sortirJoc()">Sortir del joc</button>
-                <button ng-disabled="gameOver" ng-click="testLinia()">Cantar linia</button>
-                <button ng-disabled="gameOver" ng-click="testBingo()">Cantar bingo</button>
-                
-            </div>
-        </script>
-
-
-
-        <div ng-view>
+        <div class="views" ng-view>
         </div> 
+
+       
 
         <script src="./angular-growl.min.js"></script> 
         <script src="./bingo_app.js"></script>
