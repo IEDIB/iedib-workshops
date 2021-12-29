@@ -64,11 +64,23 @@
         <script type="text/ng-template" id="game.html"> 
             <div class="view view_game">
                 <bingo-header info="headerInfo"></bingo-header>
-              
+                <div growl inline="true" reference="2"></div>
             
                 <h3 class="text-bright" ng-show="!bingoStarted">Tria un cartró</h3>
                 <div id="cartro_panell">
+                    <center>
+                    <button ng-show="!bingoStarted" ng-click="newCartro()">Genera</button>
+                    <bingo-cartro cartro="cartro" bingo-started="bingoStarted"></bingo-cartro>
+                    <center>
 
+                        <div ng-if="bingoStarted">
+                        <button class="btn btn-info" ng-click="testLinia()" ng-disabled="lineaBtnDisabled">
+                            Cantar línia
+                        </button>
+                        <button class="btn btn-info" ng-click="testBingo()">
+                            Cantar bingo
+                        </button>
+                        </div>
                 </div>
 
                 <br> 
@@ -82,6 +94,11 @@
                         Esperant que el propietari de la sala iniciï la partida ...
                     </p> 
 
+                </div>
+                <div ng-show="bingoStarted">
+                    <button class="btn btn-primary" ng-click="sortirJoc()">
+                        Sortir de la partida
+                    </button>
                 </div>
                 
                 <br>
@@ -104,8 +121,8 @@
        
 
         <script src="./angular-growl.min.js"></script> 
+        <script src="./bingo_utils.js"></script>
         <script src="./bingo_app.js"></script>
-        <script src="./bingo_equacions.js"></script>
         <script src="./local_bingo.js"></script>
         <script src="./local_server.js"></script>
     </body>

@@ -87,6 +87,7 @@ BingoClassic.prototype.testLine = function(userNumbers, user) {
     return [false, firstWrong];
 };
 BingoClassic.prototype.testBingo = function(userNumbers, user) {
+    var self = this;
     // User numbers is a list 3x3, null indicate that is not selected
     // if a null is found, must return false
     for (let i = 0; i < NUM_ROWS; i++) {

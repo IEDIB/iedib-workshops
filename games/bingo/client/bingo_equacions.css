@@ -107,6 +107,9 @@ body {
     width: 40px;
     height: 40px;
     vertical-align: middle;
+    text-align: center;
+    background-color: seashell;
+    color: black;
 }
 .cartro_celledit {
     cursor: grab;
@@ -119,11 +122,11 @@ body {
    display: table-row;
 }
 .cartro_cellvoid {
-   background-color: grey;
+   background: grey !important;
    pointer-events: none;
    cursor: not-allowed;
 }
-.cartro_cellselected > p {
+.cartro_cellselected > span {
     border: 2px solid rebeccapurple;
     padding: 5px;
     border-radius: 50%;

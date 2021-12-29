@@ -1,3 +1,4 @@
+ 
  // Socket service
  angular.module('bingoApp.services', [])
     .value('version', '0.1')
@@ -107,6 +108,25 @@ app.directive('bingoFooter', function() {
     };
 });
 
+app.directive('bingoCartro', function() {
+    return {
+      restrict: 'E',
+      transclude: true,
+      scope: {
+        cartro: '=cartro',
+        bingoStarted: '=bingoStarted'
+      },
+      template:  '<div>'+
+      ' <div ng-repeat="row in cartro.rows" class="cartro_row">'+
+      '    <div ng-click="cell.toggle(bingoStarted)" '+
+      ' ng-repeat="cell in row" class="cartro_cell" ng-class="{\'cartro_cellvoid\': cell.value==null, \'cartro_cellselected\': cell.selected}">'+
+      '         <span ng-if="cell.value!=null">{{cell.value}}</span>'+
+      '    </div>'+
+      '  </div>'+
+      '</div>'
+    };
+});
+
 app.filter('initials', function() {
     return function(input) {
       return (angular.isString(input) && input.length > 0) ? input.charAt(0).toUpperCase() : "?";
@@ -167,7 +187,9 @@ app.run(function($rootScope, cfg, socket, growl, $location) {
         }
         //Every time we land on GameCtrl ask to update the list of participants in this room
         else if(current.$$route.controller=="GameCtrl") {
-            $routeScope.bingoStarted = false; //Every time we land, we start as non-started game, and must wait for signal to start
+            $rootScope.bingoStarted = false; //Every time we land, we start as non-started game, and must wait for signal to start
+            $rootScope.lineaBtnDisabled = false;
+
             var idRoom = current.pathParams.idroom;
             socket.emit("rooms:participants", {id: idRoom}, function(success, msg) {
                 if(!success) {
@@ -246,10 +268,15 @@ var RoomsCtrl = function($scope, $rootScope, $location, cfg, socket, growl) {
 };
  
 
-var GameCtrl = function($scope, $location, $route, cfg, socket, growl) {
-    $scope.balls = [];
+var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, growl) {
+    $scope.balls = []; 
     $scope.gameOver = false; 
-    
+    $scope.cartro = new BingoUtils.Cartro();
+    console.log("EL CARTRO", $scope.cartro.rows);
+
+    $scope.newCartro = function() {
+        $scope.cartro.generate();
+    };
 
     var cuser = cfg.getUser();
     if(!cuser) {
@@ -303,7 +330,8 @@ var GameCtrl = function($scope, $location, $route, cfg, socket, growl) {
     socket.on("bingo:nextball", function(ball) {
         //next ball has arrived!
         //TODO pas the ball.id in order to detect missing balls
-        growl.info("Ha arribat la bolla " + ball.latex);
+        growl.info("Nova bolla: " + ball.latex, {referenceId: 2});
+        BingoUtils.speak(ball.speech);
         $scope.balls.push(ball);
     });
     socket.on("bingo:gameover", function() {
@@ -312,9 +340,15 @@ var GameCtrl = function($scope, $location, $route, cfg, socket, growl) {
         //TODO disable everything
         $scope.gameOver = true;
     });
-    socket.on("bingo:linea", function(res) {
+    socket.on("bingo:linea", function(data) {
         //result of the linea test
-        growl.info("Linea from "+ JSON.stringify(res))
+        if(data.user.id==cuser.id && data.res[0]===false) {
+            growl.warning("La línia no és correcta");
+        }
+        if(data.res[0]===true) {
+            growl.success("Línia és correcta de "+data.user.nick);
+            $rootScope.lineaBtnDisabled = true;
+        }
     });
     socket.on("bingo:bingo", function(res) {
         //result of the bingo test
@@ -323,11 +357,13 @@ var GameCtrl = function($scope, $location, $route, cfg, socket, growl) {
 
     $scope.testLinia = function() {
         console.log("Sending bingo:linea");
-        socket.emit("bingo:linea", {id: $scope.idRoom, numbers: [1,2,3,4,5,6,7,8,9], user: cuser});
+        console.log("Llista a comprovar ", $scope.cartro.list())
+        socket.emit("bingo:linea", {id: $scope.idRoom, numbers: $scope.cartro.list(), user: cuser});
     };
     $scope.testBingo = function() {
         console.log("Sending bingo:bingo");
-        socket.emit("bingo:bingo", {id: $scope.idRoom, numbers: [1,2,3,4,5,6,7,8,9], user: cuser});
+        console.log("Llista a comprovar ", $scope.cartro.list())
+        socket.emit("bingo:bingo", {id: $scope.idRoom, numbers: $scope.cartro.list(), user: cuser});
     };
     $scope.sortirJoc = function() {
         $location.path("/rooms");
@@ -338,7 +374,7 @@ var GameCtrl = function($scope, $location, $route, cfg, socket, growl) {
 
 LandingCtrl.$inject = ["$scope", "$location", "cfg", "socket", "growl"];
 RoomsCtrl.$inject = ["$scope", "$rootScope", "$location", "cfg", "socket", "growl"];
-GameCtrl.$inject = ["$scope", "$location", "$route", "cfg", "socket", "growl"]; 
+GameCtrl.$inject = ["$scope", "$rootScope", "$location", "$route", "cfg", "socket", "growl"]; 
 
 app.controller("LandingCtrl", LandingCtrl);
 app.controller("RoomsCtrl", RoomsCtrl);
