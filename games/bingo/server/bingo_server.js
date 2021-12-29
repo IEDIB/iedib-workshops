@@ -77,6 +77,7 @@ io.on("connection", (socket) => {
             }
         }
         console.log("joined now is ", joined[k.id]);
+        var hasBot = false;
         // Purge empty rooms (everybody left)
         if(croom.length == 0) {
             console.log("Purging");

@@ -64,8 +64,11 @@
         <script type="text/ng-template" id="game.html"> 
             <div class="view view_game">
                 <bingo-header info="headerInfo"></bingo-header>
+                <div style="overflow-y:hidden; overflow-x: auto; background: darkyellow; padding:20px;">
+                    <div ng-repeat="b in balls" style="display: inline-block;border:1px solid brown;padding:2px;margin:5px">{{b.latex}}</div>
+                </div>
                 <div growl inline="true" reference="2"></div>
-            
+                <button style="float:right" ng-click="mute=!mute">Veu {{!mute}}</button>
                 <h3 class="text-bright" ng-show="!bingoStarted">Tria un cartró</h3>
                 <div id="cartro_panell">
                     <center>

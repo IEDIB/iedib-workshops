@@ -42,7 +42,7 @@ BingoClassic.prototype.init = function() {
         this.bolles.push(new U.Bolla(this.nombres[i]));
     }
     // start the timer
-    this.timer.play();
+    this.timer && this.timer.play();
 };
 BingoClassic.prototype.next = function() {
     if(this.itera >= NUM_BOLLES || this.winner != null) {

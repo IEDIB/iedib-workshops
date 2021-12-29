@@ -73,13 +73,17 @@
                     croom.splice(i, 1);
                 }
             }
-            console.log("joined now is ", joined[k.id]);
+            console.log("joined now is ", croom);
+            var hasBot = croom.length == 1 && croom[0].idUser=="localBot";
             // Purge empty rooms (everybody left)
-            if (croom.length == 0) {
+            if ( (hasBot && croom.length == 1) || croom.length == 0) {
                 console.log("Purging");
                 console.log("The room croom is empty ")
                 croom = null;
-                delete rooms[k.id];
+                //No eliminis la sala default en local
+                if(k.id!=="localRoom") {
+                    delete rooms[k.id];
+                }
                 delete joined[k.id];
                 // Must stop any running bingo
                 if (bingos[k.id]) {

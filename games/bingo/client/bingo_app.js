@@ -271,8 +271,8 @@ var RoomsCtrl = function($scope, $rootScope, $location, cfg, socket, growl) {
 var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, growl) {
     $scope.balls = []; 
     $scope.gameOver = false; 
-    $scope.cartro = new BingoUtils.Cartro();
-    console.log("EL CARTRO", $scope.cartro.rows);
+    $scope.cartro = new BingoUtils.Cartro(); 
+    $scope.mute = false;
 
     $scope.newCartro = function() {
         $scope.cartro.generate();
@@ -331,8 +331,10 @@ var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, grow
         //next ball has arrived!
         //TODO pas the ball.id in order to detect missing balls
         growl.info("Nova bolla: " + ball.latex, {referenceId: 2});
-        BingoUtils.speak(ball.speech);
-        $scope.balls.push(ball);
+        if(!$scope.mute) {
+            BingoUtils.speak(ball.speech);
+        }
+        $scope.balls.unshift(ball);
     });
     socket.on("bingo:gameover", function() {
         //the game has finished
