@@ -63,6 +63,44 @@ io.on("connection", (socket) => {
 
     socket.on("rooms:leave", function(k) {
         console.log("rooms:leave", k);
+        if(k.id=="*" && k.idUser) {
+            //Asked to leave the user from all rooms and keep the rooms intact
+
+            let keys = Object.keys(joined); //all rooms with somebody joined
+            const lenk = keys.length;
+            for (let j = 0; j < lenk; j++) {
+                const roomId = keys[j];
+                let croom = joined[roomId];
+                const len = croom.length;
+                console.log("croom", croom);
+                for (let i = len - 1; i >= 0; i--) {
+                    console.log("Comparant ", croom[i].idUser , k.idUser)
+                    if (croom[i].idUser == k.idUser) {
+                        console.log("Removing user ", k.idUser, " from ", roomId);
+                        croom.splice(i, 1);
+                    }
+                }  
+                console.log("Check purges in ", roomId);
+                // Purge empty rooms (everybody left)
+                if(croom.length == 0) {
+                        console.log("Purging");
+                        console.log("The room croom is empty ")
+                        croom = null;
+                        delete rooms[roomId];
+                        delete joined[roomId];
+                        // Must stop any running bingo
+                        if(bingos[roomId]) {
+                            bingos[roomId].off();
+                        }
+                        delete bingos[roomId];
+                        
+                }
+            }
+
+
+            return;
+        }  
+
         if(!rooms[k.id]) {
             console.log("Asking leave of invalid room ", k.id); 
             socket.emit("rooms:leave", "invalid_room");
@@ -75,7 +113,8 @@ io.on("connection", (socket) => {
             if (croom[i].idUser === k.idUser) {
                 croom.splice(i, 1);
             }
-        }
+        } 
+
         console.log("joined now is ", joined[k.id]);
         var hasBot = false;
         // Purge empty rooms (everybody left)
@@ -118,9 +157,10 @@ io.on("connection", (socket) => {
             }
             if(!found) { 
                 joined[k.id].push({idUser: k.idUser, nick: k.nick});
+                // Join room and send only to the room
+                socket.join(k.id);
             } 
-            // Join room and send only to the room
-            socket.join(k.id);
+           
             io.to(k.id).emit("rooms:participants", joined[k.id])
             cb && cb(true, "T'has unit a la sala " + k.id);
         } else {
@@ -144,10 +184,13 @@ io.on("connection", (socket) => {
         });
 
         bingo.on("gameover", function(winner){
+            //wait some time to see if somebody claims bingo
+            setTimeout(function(){
             io.to(k.id).emit("bingo:gameover", winner);
             // TODO unbind events on bingo
             bingo.off();
             bingo.pause();
+            }, 2000*BINGO_CHECK_TIME);
         });
 
         // Inform to all other participants in the room
@@ -166,19 +209,20 @@ io.on("connection", (socket) => {
         bingo.pause();
 
         // Simulate some time to check the linia
+        const testRes = bingo.testLine(k.numbers, k.user);
+        console.log("bingo:linea result", testRes);
+        const correcte = testRes.length > 0 && testRes[0]===true;
+        if(!correcte) {
+            //Informa'm només a jo (no molestis als altres)
+            socket.emit("bingo:linea", {res: testRes, user: k.user});
+            console.log("Notifying to user");
+        } else {
+            // Inform to all participants in the room that the linia is correct
+            io.to(k.id).emit("bingo:linea", {res: testRes, user: k.user});
+            console.log("Notifying to all");
+        }
+
         setTimeout(function(){
-            const testRes = bingo.testLine(k.numbers, k.user);
-            console.log("bingo:linea result", testRes);
-            const correcte = testRes.length > 0 && testRes[0]===true;
-            if(!correcte) {
-                //Informa'm només a jo (no molestis als altres)
-                socket.emit("bingo:linea", {res: testRes, user: k.user});
-                console.log("Notifying to user");
-            } else {
-                // Inform to all participants in the room that the linia is correct
-                io.to(k.id).emit("bingo:linea", {res: testRes, user: k.user});
-                console.log("Notifying to all");
-            }
             // Retake game
             bingo.play();
         }, LINEA_CHECK_TIME*1000);
@@ -194,16 +238,16 @@ io.on("connection", (socket) => {
         bingo.pause();
 
         // Simulate some time to check the linia
+        const testRes = bingo.testBingo(k.numbers, k.user);
+        const correcte = testRes.length > 0 && testRes[0]===true;
+        if(!correcte) {
+            //Informa'm només a jo (no molestis als altres)
+            socket.emit("bingo:bingo", {res: testRes, user: k.user});
+        } else {
+            // Inform to all participants in the room that the linia is correct
+            io.to(k.id).emit("bingo:bingo", {res: testRes, user: k.user});
+        }
         setTimeout(function(){
-            const testRes = bingo.testBingo(k.numbers, k.user);
-            const correcte = testRes.length > 0 && testRes[0]===true;
-            if(!correcte) {
-                //Informa'm només a jo (no molestis als altres)
-                socket.emit("bingo:bingo", {res: testRes, user: k.user});
-            } else {
-                // Inform to all participants in the room that the linia is correct
-                io.to(k.id).emit("bingo:bingo", {res: testRes, user: k.user});
-            }
             // Retake game
             bingo.play();
 

@@ -37,7 +37,8 @@ const shuffle = function (aList) {
     return cloned;
 };
 
-function Bolla(valor) {
+function Bolla(id, valor) {
+    this.id = id;
     this.latex = ""+valor;
     this.speech = {"ca-ES": "El "+valor, "es-ES": "El "+valor};
 }

@@ -39,7 +39,7 @@ BingoClassic.prototype.init = function() {
     this.bolles = [];
     for (var i = 0; i < NUM_BOLLES; i++) { 
         // Bingo classic, únicament la bolla
-        this.bolles.push(new U.Bolla(this.nombres[i]));
+        this.bolles.push(new U.Bolla(i+1, this.nombres[i]));
     }
     // start the timer
     this.timer && this.timer.play();
@@ -105,7 +105,7 @@ BingoClassic.prototype.testBingo = function(userNumbers, user) {
     }
     this.winner = user;
     // We can stop the timer since no more balls are required
-    this.timer.pause();
+    this.timer && this.timer.pause();
     this.timer = null;
     for (var i = 0, ln=self.gameoverNotifiers.length; i < ln; i++) { 
         self.gameoverNotifiers[i](this.winner);
@@ -123,7 +123,7 @@ BingoClassic.prototype.on = function(evtname, cb) {
 BingoClassic.prototype.off = function() {
     this.nextballNotifiers = [];
     this.gameoverNotifiers = [];
-    this.timer.pause();
+    this.timer && this.timer.pause();
     this.timer = null;
 };
 BingoClassic.prototype.trigger = function(delay) {

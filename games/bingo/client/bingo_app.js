@@ -1,24 +1,25 @@
- 
- // Socket service
- angular.module('bingoApp.services', [])
+
+// Socket service
+angular.module('bingoApp.services', [])
     .value('version', '0.1')
     .factory('socket', function($rootScope) { 
     var socket = io.connect("http://127.0.0.1:3000");
     var socketLocal = ioClientLocal.connect();
     var mode = {method: 'remote'};
-    if(!socket.connected) {
+    /*if(!socket.connected) {
         console.log("Socket not connected. Offline mode");
         mode.method = 'offline';
     } else {
+     */
         socket.on("connect_error", function() {
             console.log("connect error");
             mode.method = 'offline'; 
         });
-    }
+    
     return {
         on: function(eventName, callback) {
             var actualSocket = socket;
-            if(!socket.connected || mode.method === 'offline') {
+            if(mode.method === 'offline') {
                 console.log("Offline mode");
                 actualSocket = socketLocal;
             }
@@ -31,7 +32,7 @@
         },
         emit: function(eventName, data, callback) {
             var actualSocket = socket;
-            if(!socket.connected || mode.method === 'offline') {
+            if(mode.method === 'offline') {
                 console.log("Offline mode");
                 $rootScope.$emit('method', 'offline');
                 actualSocket = socketLocal;
@@ -119,7 +120,7 @@ app.directive('bingoCartro', function() {
       template:  '<div>'+
       ' <div ng-repeat="row in cartro.rows" class="cartro_row">'+
       '    <div ng-click="cell.toggle(bingoStarted)" '+
-      ' ng-repeat="cell in row" class="cartro_cell" ng-class="{\'cartro_cellvoid\': cell.value==null, \'cartro_cellselected\': cell.selected}">'+
+      ' ng-repeat="cell in row" class="cartro_cell" ng-class="{\'cartro_cellvoid\': cell.value==null, \'cartro_cellselected\': cell.selected, \'cartro_celledit\': bingoStarted && cell.value!=null}">'+
       '         <span ng-if="cell.value!=null">{{cell.value}}</span>'+
       '    </div>'+
       '  </div>'+
@@ -133,7 +134,19 @@ app.filter('initials', function() {
     }
 });
 
-app.run(function($rootScope, cfg, socket, growl, $location) {
+app.run(function($rootScope, cfg, socket, growl, $location, $window) {
+ 
+    
+    $window.addEventListener('beforeunload', function(e) { 
+        var cuser = cfg.getUser();
+        if(cuser) { 
+            socket.emit("rooms:leave", {id: '*', idUser: cuser.idUser});
+        }
+        //e.preventDefault();
+        //e.returnValue = '';
+        //return;
+    }); 
+     
 
     //Detect offline operation
     $rootScope.$on("method", function(evt, value) { 
@@ -161,6 +174,7 @@ app.run(function($rootScope, cfg, socket, growl, $location) {
             var cuser = cfg.getUser();
             console.log("Leaving room "+idRoom);
             socket.emit("rooms:leave", {id:idRoom, idUser: cuser.idUser, nick: cuser.nick});
+            $rootScope.currentRoom = null;
         }
 
         //Detect room join
@@ -189,6 +203,7 @@ app.run(function($rootScope, cfg, socket, growl, $location) {
         else if(current.$$route.controller=="GameCtrl") {
             $rootScope.bingoStarted = false; //Every time we land, we start as non-started game, and must wait for signal to start
             $rootScope.lineaBtnDisabled = false;
+            $rootScope.isGameover = false;
 
             var idRoom = current.pathParams.idroom;
             socket.emit("rooms:participants", {id: idRoom}, function(success, msg) {
@@ -269,8 +284,7 @@ var RoomsCtrl = function($scope, $rootScope, $location, cfg, socket, growl) {
  
 
 var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, growl) {
-    $scope.balls = []; 
-    $scope.gameOver = false; 
+    $scope.balls = [];  
     $scope.cartro = new BingoUtils.Cartro(); 
     $scope.mute = false;
 
@@ -328,19 +342,31 @@ var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, grow
     // Game is running
 
     socket.on("bingo:nextball", function(ball) {
+        // check if this ball.id is already here
+        var found = false;
+        var i = 0;
+        while(!found && i<$scope.balls) {
+            found = $scope.balls[i].id==ball.id;
+            i++;
+        }
+        if(found) {
+            return;
+        }
+        //TODO check
+        //TODO check the ball.id in order to detect missing balls
+
         //next ball has arrived!
-        //TODO pas the ball.id in order to detect missing balls
-        growl.info("Nova bolla: " + ball.latex, {referenceId: 2});
+        //growl.info("Nova bolla: " + ball.latex, {referenceId: 2});
+        $scope.balls.unshift(ball);
         if(!$scope.mute) {
             BingoUtils.speak(ball.speech);
         }
-        $scope.balls.unshift(ball);
     });
     socket.on("bingo:gameover", function() {
         //the game has finished
         growl.info("El joc s'ha acabat.");
-        //TODO disable everything
-        $scope.gameOver = true;
+        //TODO disable everything 
+        $rootScope.isGameover = true;
     });
     socket.on("bingo:linea", function(data) {
         //result of the linea test

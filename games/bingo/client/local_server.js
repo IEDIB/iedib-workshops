@@ -144,12 +144,16 @@
                 ioServerLocal.to(k.id).emit("bingo:nextball", ball);
             });
 
-            bingo.on("gameover", function (winner) {
-                ioServerLocal.to(k.id).emit("bingo:gameover", winner);
+            bingo.on("gameover", function(winner){
+                //wait some time to see if somebody claims bingo
+                setTimeout(function(){
+                io.to(k.id).emit("bingo:gameover", winner);
                 // TODO unbind events on bingo
                 bingo.off();
                 bingo.pause();
+                }, 2000*BINGO_CHECK_TIME);
             });
+    
 
             // Inform to all other participants in the room
             ioServerLocal.to(k.id).emit("bingo:start");
@@ -167,19 +171,20 @@
             bingo.pause();
 
             // Simulate some time to check the linia
+            var testRes = bingo.testLine(k.numbers, k.user);
+            console.log("bingo:linea result", testRes);
+            var correcte = testRes.length > 0 && testRes[0] === true;
+            if (!correcte) {
+                //Informa'm només a jo (no molestis als altres)
+                socket.emit("bingo:linea", { res: testRes, user: k.user });
+                console.log("Notifying to user");
+            } else {
+                // Inform to all participants in the room that the linia is correct
+                ioServerLocal.to(k.id).emit("bingo:linea", { res: testRes, user: k.user });
+                console.log("Notifying to all");
+            }
+
             setTimeout(function () {
-                var testRes = bingo.testLine(k.numbers, k.user);
-                console.log("bingo:linea result", testRes);
-                var correcte = testRes.length > 0 && testRes[0] === true;
-                if (!correcte) {
-                    //Informa'm només a jo (no molestis als altres)
-                    socket.emit("bingo:linea", { res: testRes, user: k.user });
-                    console.log("Notifying to user");
-                } else {
-                    // Inform to all participants in the room that the linia is correct
-                    ioServerLocal.to(k.id).emit("bingo:linea", { res: testRes, user: k.user });
-                    console.log("Notifying to all");
-                }
                 // Retake game
                 bingo.play();
             }, LINEA_CHECK_TIME * 1000);
@@ -195,16 +200,17 @@
             bingo.pause();
 
             // Simulate some time to check the linia
+            var testRes = bingo.testBingo(k.numbers, k.user);
+            var correcte = testRes.length > 0 && testRes[0] === true;
+            if (!correcte) {
+                //Informa'm només a jo (no molestis als altres)
+                socket.emit("bingo:bingo", { res: testRes, user: k.user });
+            } else {
+                // Inform to all participants in the room that the linia is correct
+                ioServerLocal.to(k.id).emit("bingo:bingo", { res: testRes, user: k.user });
+            }
             setTimeout(function () {
-                var testRes = bingo.testBingo(k.numbers, k.user);
-                var correcte = testRes.length > 0 && testRes[0] === true;
-                if (!correcte) {
-                    //Informa'm només a jo (no molestis als altres)
-                    socket.emit("bingo:bingo", { res: testRes, user: k.user });
-                } else {
-                    // Inform to all participants in the room that the linia is correct
-                    ioServerLocal.to(k.id).emit("bingo:bingo", { res: testRes, user: k.user });
-                }
+               
                 // Retake game
                 bingo.play();
 

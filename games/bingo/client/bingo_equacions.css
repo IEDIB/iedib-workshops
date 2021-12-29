@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Spicy+Rice&display=swap');
+
 /** Window and views **/
 body {
     margin: auto;
@@ -30,7 +32,7 @@ body {
     margin: 20px auto; 
     text-align: center;
     vertical-align: middle;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: 'Spicy Rice', cursive;
 }
 .bingo_header > div {
     display: inline-block;
@@ -56,6 +58,7 @@ body {
     position: relative;
     min-height: 500px;
     margin: 15px;
+    margin-bottom: 50px;
 }
 .view.view_nick {
     margin: auto;

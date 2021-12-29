@@ -4,8 +4,7 @@
         <title>Bingo d'equacions!</title>
         <meta charset="utf8">
       
-        <!--fonts-->
-
+        <!--fonts--> 
         <!--js-->
         <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
@@ -64,11 +63,9 @@
         <script type="text/ng-template" id="game.html"> 
             <div class="view view_game">
                 <bingo-header info="headerInfo"></bingo-header>
-                <div style="overflow-y:hidden; overflow-x: auto; background: darkyellow; padding:20px;">
-                    <div ng-repeat="b in balls" style="display: inline-block;border:1px solid brown;padding:2px;margin:5px">{{b.latex}}</div>
-                </div>
-                <div growl inline="true" reference="2"></div>
-                <button style="float:right" ng-click="mute=!mute">Veu {{!mute}}</button>
+                
+                <button  ng-click="mute=!mute">Veu {{!mute}}</button>
+
                 <h3 class="text-bright" ng-show="!bingoStarted">Tria un cartró</h3>
                 <div id="cartro_panell">
                     <center>
@@ -77,10 +74,10 @@
                     <center>
 
                         <div ng-if="bingoStarted">
-                        <button class="btn btn-info" ng-click="testLinia()" ng-disabled="lineaBtnDisabled">
+                        <button class="btn btn-info" ng-click="testLinia()" ng-disabled="lineaBtnDisabled || isGameover">
                             Cantar línia
                         </button>
-                        <button class="btn btn-info" ng-click="testBingo()">
+                        <button class="btn btn-info" ng-click="testBingo()" ng-disabled="isGameover">
                             Cantar bingo
                         </button>
                         </div>
@@ -99,11 +96,19 @@
 
                 </div>
                 <div ng-show="bingoStarted">
-                    <button class="btn btn-primary" ng-click="sortirJoc()">
+                    <button class="btn btn-secondary" ng-click="sortirJoc()">
                         Sortir de la partida
                     </button>
                 </div>
+
+                <div style="width:80%;background:#483232;border:1px dotted yellow; padding:20px;margin:10px auto;">
+                <!--<div growl inline="true" reference="2"></div>-->
+                <div style="overflow-y:auto;height:100px;width:80%;">
+                    <div ng-repeat="b in balls" style="display: inline-block;border:1px solid brown;padding:2px;margin:5px">{{b.latex}}</div>
+                </div>
+                </div>
                 
+
                 <br>
                 <h3 class="text-bright">Jugadors (<span ng-bind="participants.length"></span>)</h3>
                 <div class="players_container">    

@@ -83,7 +83,8 @@
         return cloned;
     };
 
-    function Bolla(valor) {
+    function Bolla(id, valor) {
+        this.id = id;
         this.latex = "" + valor;
         this.speech = { "ca-ES": "El " + valor, "es-ES": "El " + valor };
     }
@@ -132,7 +133,7 @@
         this.bolles = [];
         for (var i = 0; i < NUM_BOLLES; i++) {
             // Bingo classic, únicament la bolla
-            this.bolles.push(new U.Bolla(this.nombres[i]));
+            this.bolles.push(new U.Bolla(i+1, this.nombres[i]));
         }
         // start the timer
         this.timer && this.timer.play();
@@ -198,7 +199,7 @@
         }
         this.winner = user;
         // We can stop the timer since no more balls are required
-        this.timer.pause();
+        this.timer && this.timer.pause();
         this.timer = null;
         for (var i = 0, ln = self.gameoverNotifiers.length; i < ln; i++) {
             self.gameoverNotifiers[i](this.winner);
@@ -216,7 +217,7 @@
     BingoClassic.prototype.off = function () {
         this.nextballNotifiers = [];
         this.gameoverNotifiers = [];
-        this.timer.pause();
+        this.timer && this.timer.pause();
         this.timer = null;
     };
     BingoClassic.prototype.trigger = function (delay) {
