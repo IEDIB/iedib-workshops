@@ -3,24 +3,23 @@
     <head>
         <title>Bingo d'equacions!</title>
         <meta charset="utf8">
-      
-        <!--fonts--> 
-        <!--js-->
-        <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.2/angular-route.min.js" integrity="sha512-5zOAub3cIpqklnKmM05spv4xttemFDlbBrmRexWiP0aWV8dlayEGciapAjBQWA7lgQsxPY6ay0oIUVtY/pivXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/katex.min.js" integrity="sha512-5ufNcHqOYgilGEHPfuRIQ5B/vDS1M8+UC+DESZ5CwVgGTg+b2Ol/15rYL/GiCWJ/Sx8oVo0FPFok1dPk8U9INQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        <script src="./socket.io.min.js"></script>
-        <script src="./fake-socket.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
-    
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        
         <!--styles-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/katex.min.css" integrity="sha512-vJqxkZ+Sugf/6WRlpcxN01qVfX/29hF6qc33eHF1va3NgoV+U+wCi+uTAsQ10sDoGyBxHLdaHvGwDlV3yVYboA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="./angular-growl.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
         <link rel="stylesheet" href="./bingo_equacions.css">
-       
-    
+        
+        <!--js-->
+        <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+        <script src="https://unpkg.com/@uirouter/angularjs@1.0.5/release/angular-ui-router.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.15.1/katex.min.js" integrity="sha512-5ufNcHqOYgilGEHPfuRIQ5B/vDS1M8+UC+DESZ5CwVgGTg+b2Ol/15rYL/GiCWJ/Sx8oVo0FPFok1dPk8U9INQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="./socket.io.min.js"></script>
+        <script src="./fake-socket.js"></script>
+      
     </head>
     <body ng-app="bingoApp">
         <div growl></div>
@@ -69,8 +68,8 @@
                 <h3 class="text-bright" ng-show="!bingoStarted">Tria un cartró</h3>
                 <div id="cartro_panell">
                     <center>
-                    <button ng-show="!bingoStarted" ng-click="newCartro()">Genera</button>
-                    <bingo-cartro cartro="cartro" bingo-started="bingoStarted"></bingo-cartro>
+                        <button ng-show="!bingoStarted" ng-click="newCartro()">Genera</button>
+                        <bingo-cartro cartro="cartro" bingo-started="bingoStarted"></bingo-cartro>
                     <center>
 
                         <div ng-if="bingoStarted">
@@ -88,10 +87,10 @@
                     <button class="btn btn-primary" ng-show="isOffline || currentRoom.idUser==headerInfo.idUser" id="notice_startgame" 
                     ng-click="onSubmitStart()" ng-if="canSubmitStart">
                         Començar la partida
-                    </button>
-
+                    </button>  
+                    
                     <p ng-show="!isOffline && currentRoom.idUser!=headerInfo.idUser">
-                        Esperant que el propietari de la sala iniciï la partida ...
+                        Esperant que {{currentRoom.nick}} iniciï la partida ...
                     </p> 
 
                 </div>
@@ -103,7 +102,7 @@
 
                 <div style="width:80%;background:#483232;border:1px dotted yellow; padding:20px;margin:10px auto;">
                 <!--<div growl inline="true" reference="2"></div>-->
-                <div style="overflow-y:auto;height:100px;width:80%;">
+                <div style="overflow-y:auto;height:100px;">
                     <div ng-repeat="b in balls" style="display: inline-block;border:1px solid brown;padding:2px;margin:5px">{{b.latex}}</div>
                 </div>
                 </div>
@@ -123,8 +122,8 @@
 
         <div growl inline="true" reference="1"></div>
 
-        <div class="views" ng-view>
-        </div> 
+        <ui-view class="views"></ui-view>
+        
 
        
 

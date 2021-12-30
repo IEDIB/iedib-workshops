@@ -1,3 +1,9 @@
+const extend = function (child, parent) {
+    var f = function () {};
+    f.prototype = parent.prototype;
+    child.prototype = new f();
+    child.prototype.constructor = parent;
+};
 
 const iran = function (a, b) {
     return Math.round(Math.random() * (b - a)) + a
@@ -37,10 +43,12 @@ const shuffle = function (aList) {
     return cloned;
 };
 
-function Bolla(id, valor) {
+function Bolla(id, number, latex, translations, ttl) {
     this.id = id;
-    this.latex = ""+valor;
-    this.speech = {"ca-ES": "El "+valor, "es-ES": "El "+valor};
+    this.number = number;
+    this.latex = latex;
+    this.speech = translations;
+    this.ttl = ttl || 5000;
 }
 
 module.exports = {
@@ -49,5 +57,6 @@ module.exports = {
     shuffle,
     sort,
     listClone,
-    Bolla
+    Bolla,
+    extend
 }

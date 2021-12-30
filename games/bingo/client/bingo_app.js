@@ -3,7 +3,8 @@
 angular.module('bingoApp.services', [])
     .value('version', '0.1')
     .factory('socket', function($rootScope) { 
-    var socket = io.connect("http://127.0.0.1:3000");
+    //var socket = io.connect("http://127.0.0.1:3000");
+    var socket = io.connect("https://piworld.es/");
     var socketLocal = ioClientLocal.connect();
     var mode = {method: 'remote'};
     /*if(!socket.connected) {
@@ -39,14 +40,24 @@ angular.module('bingoApp.services', [])
             }
             actualSocket.emit(eventName, data, function() {
                 var args = arguments;
-                /*
                 $rootScope.$apply(function() {
                     if (callback) {
                         callback.apply(actualSocket, args);
                     }
                 });
-                */
             })
+        },
+        removeAllListeners: function() {
+            var actualSocket = socket;
+            if(mode.method === 'offline') { 
+                actualSocket = socketLocal;
+            }  
+            actualSocket.removeAllListeners();
+            //Attach error again
+            actualSocket.on("connect_error", function() {
+                console.log("connect error");
+                mode.method = 'offline'; 
+            });
         }
     };
 })
@@ -74,7 +85,7 @@ angular.module('bingoApp.services', [])
 	
 
 
-var app = angular.module("bingoApp", ['ngRoute', 'bingoApp.services', 'angular-growl']);
+var app = angular.module("bingoApp", ['ui.router', 'bingoApp.services', 'angular-growl']);
 
 app.directive('bingoHeader', function() {
     return {
@@ -84,7 +95,7 @@ app.directive('bingoHeader', function() {
         headerInfo: '=info'
       },
       template:  '<div class="bingo_header">'+
-      '<div class="user_ball">'+
+      '<div class="user_ball" ng-click="headerInfo.exit()">'+
       '     <h2 ng-bind="headerInfo.nick | initials" title="{{headerInfo.nick}}"></h2>'+
       '</div>'+
       ' <div>'+
@@ -134,7 +145,7 @@ app.filter('initials', function() {
     }
 });
 
-app.run(function($rootScope, cfg, socket, growl, $location, $window) {
+app.run(function($rootScope, cfg, socket, growl, $state, $window, $transitions) {
  
     
     $window.addEventListener('beforeunload', function(e) { 
@@ -150,7 +161,6 @@ app.run(function($rootScope, cfg, socket, growl, $location, $window) {
 
     //Detect offline operation
     $rootScope.$on("method", function(evt, value) { 
-
         console.log("Rootscope event ", evt, value);
         $rootScope.isOffline = value == 'offline';
         if(value === "offline" && !$rootScope.methodNotified) {
@@ -158,67 +168,27 @@ app.run(function($rootScope, cfg, socket, growl, $location, $window) {
             growl.error("Vaja, no hi ha connexió. Estàs en mode fora de línia.", {ttl: -1, referenceId: 1});
         }
     });
-
-
-    $rootScope.$on('$routeChangeStart', function($event, current, previous) { 
-        // ... you could trigger something here ...
-        //$event.preventDefault();
-        console.log($event);
-        console.log(current);
-        console.log(previous);
-
-        //Detect room leave events
-        if(previous!=null && (previous.$$route.controller=="GameCtrl")
-        && (current.$$route.controller!="GameCtrl")) {
-            var idRoom = previous.pathParams.idroom;
-            var cuser = cfg.getUser();
-            console.log("Leaving room "+idRoom);
-            socket.emit("rooms:leave", {id:idRoom, idUser: cuser.idUser, nick: cuser.nick});
-            $rootScope.currentRoom = null;
-        }
-
-        //Detect room join
-        if(current.$$route.controller=="GameCtrl" ) {
-            var idRoom = current.pathParams.idroom;
-            var cuser = cfg.getUser();
-            if(!cuser) {
-                //This is an error so must ask to identify
-                $location.path("/");
-                return;
-            }
-            console.log("Joining room "+idRoom);
-            socket.emit("rooms:join", {id: idRoom, idUser: cuser.idUser, nick: cuser.nick}, function(success, msg){
-                console.log("RESULT");
-                if(!success) {
-                    growl.error(msg);
-                }  
-            });  
-        }
-
-        //Every time we land on RoomsCtrl ask to update the list of rooms
-        if(current.$$route.controller=="RoomsCtrl") {
-            socket.emit("rooms:available");
-        }
-        //Every time we land on GameCtrl ask to update the list of participants in this room
-        else if(current.$$route.controller=="GameCtrl") {
-            $rootScope.bingoStarted = false; //Every time we land, we start as non-started game, and must wait for signal to start
-            $rootScope.lineaBtnDisabled = false;
-            $rootScope.isGameover = false;
-
-            var idRoom = current.pathParams.idroom;
-            socket.emit("rooms:participants", {id: idRoom}, function(success, msg) {
-                if(!success) {
-                    growl.error(msg);
-                    $location.path("/rooms");
-                }
-            });
-        }
-        
+ 
+    //Detect room leave events
+    $transitions.onStart({from: 'game'}, function(transition) {
+        var previous = transition.from();
+        var current = transition.to();
+       
+        if(current.name!="game") {
+             var params = transition.params('from'); 
+             var idRoom = params.idroom;
+             var cuser = cfg.getUser();
+             console.log("Leaving room "+idRoom); 
+             socket.emit("rooms:leave", {id:idRoom, idUser: cuser.idUser, nick: cuser.nick});
+             $rootScope.currentRoom = null;
+         }
     });
+ 
+     
 });
  
-var LandingCtrl = function($scope, $location, cfg, socket, growl) {
-
+var LandingCtrl = function($scope, $state, cfg, socket, growl) { 
+    socket.removeAllListeners();
     var cuser = cfg.getUser();
     $scope.nick = cuser? cuser.nick : "";
     $scope.headerInfo = {
@@ -226,7 +196,7 @@ var LandingCtrl = function($scope, $location, cfg, socket, growl) {
         id: null,
         typeName: 'E q u a c i o n s',
         exit: function() {
-            $location.path("/");
+            $state.go("home", {}, {reload: false});
         }
     };
     $scope.onKeyUp = function(keyEvent) {
@@ -240,16 +210,20 @@ var LandingCtrl = function($scope, $location, cfg, socket, growl) {
             return;
         }
         cfg.setNick($scope.nick);
-        $location.path('/rooms');
+        $state.go('rooms', {}, {reload: false});
     };
 
 };
 
-var RoomsCtrl = function($scope, $rootScope, $location, cfg, socket, growl) {
- 
+var RoomsCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
+    socket.removeAllListeners();
+    
+    socket.emit("rooms:available");
+
+
     var cuser = cfg.getUser();
     if(!cuser) {
-        $location.path("/");
+        $state.go("home", {}, {reload: false});
     }
     socket.on("rooms:available", function(rooms){
         $scope.rooms = rooms;
@@ -260,13 +234,13 @@ var RoomsCtrl = function($scope, $rootScope, $location, cfg, socket, growl) {
         id: null,
         typeName: 'E q u a c i o n s',
         exit: function() {
-            $location.path("/");
+            $state.go("home", {}, {reload: false});
         }
     };
 
     $scope.joinroom = function(r) { 
         console.log("Attempting join room", r);
-        $location.path("/game/"+r.id);
+        $state.go("game", {idroom: r.id}, {reload: false});
         
     };
     $scope.newroom = function() { 
@@ -283,7 +257,33 @@ var RoomsCtrl = function($scope, $rootScope, $location, cfg, socket, growl) {
 };
  
 
-var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, growl) {
+var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) { 
+    socket.removeAllListeners();
+    var cuser = cfg.getUser();
+    if(!cuser) {
+        $state.go("home", {}, {reload: false});
+        return;
+    }
+
+    //Every time we land on GameCtrl ask to update the list of participants in this room
+    $rootScope.bingoStarted = false; //Every time we land, we start as non-started game, and must wait for signal to start
+    $rootScope.lineaBtnDisabled = false;
+    $rootScope.isGameover = false;
+
+   
+    var idRoom = $state.params.idroom;
+    console.log("Joining room "+idRoom);
+    socket.emit("rooms:join", {id: idRoom, idUser: cuser.idUser, nick: cuser.nick}, function(success, msg){
+        console.log("RESULT");
+        if(!success) {
+            growl.error(msg);
+        }  
+    });  
+
+    var idRoom = $state.params.idroom;
+   
+
+
     $scope.balls = [];  
     $scope.cartro = new BingoUtils.Cartro(); 
     $scope.mute = false;
@@ -292,42 +292,50 @@ var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, grow
         $scope.cartro.generate();
     };
 
-    var cuser = cfg.getUser();
-    if(!cuser) {
-        $location.path("/");
-    }
      //check if set roomId
-    $scope.idRoom = $route.current.params.idroom;
+    $scope.idRoom = idRoom;
     $scope.participants = [];
     $scope.canSubmitStart = true;
     $scope.headerInfo = {
+        idUser: cuser.idUser,
         nick: cuser.nick,
         id: $scope.idRoom,
         typeName: 'E q u a c i o n s',
         exit: function() {
-            $location.path("/");
+            $state.go("home", {}, {reload: false});
         }
     };
 
-    // Need to retrieve information about the root
-    socket.on("rooms:info", function(roomInfo){
+
+    //TO decide who can press submit start game
+    // Need to retrieve information about the room
+    socket.on("rooms:info", function(roomInfo) { 
         $scope.currentRoom = roomInfo;
     });
+    socket.emit("rooms:info", {id: idRoom});
 
-    //TODO decide who can press submit start game
    
     // Pregame
     socket.on("rooms:participants", function(participants) {
         if(participants == "invalid_room") {
             console.log("invalid room");
             //invalid room man
-            $location.path("/rooms");
+            $state.go("rooms", {}, {reload: false});
             return;
         }
+        alert("participants", participants);
         $scope.participants = participants;
     });
 
-    socket.on("bingo:start", function() {
+    socket.on("bingo:start", function(idRoom)  {
+        // Only listen to changes in the same room
+        if(!$scope.currentRoom) {
+            console.error("Requires room information before starting bingo");
+            return;
+        }
+        if($scope.currentRoom.id != idRoom) {
+            return;
+        }
         // Prepare to start the game
         growl.info("La partida està apunt de començar.");
         //TODO Set variables
@@ -370,18 +378,40 @@ var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, grow
     });
     socket.on("bingo:linea", function(data) {
         //result of the linea test
+        if(!data.res.length || $rootScope.isGameover) {
+            // Ja ha estat cantat
+            return;
+        }
         if(data.user.id==cuser.id && data.res[0]===false) {
             growl.warning("La línia no és correcta");
         }
         if(data.res[0]===true) {
-            growl.success("Línia és correcta de "+data.user.nick);
+            growl.success("Línia correcta de "+data.user.nick);
             $rootScope.lineaBtnDisabled = true;
         }
     });
-    socket.on("bingo:bingo", function(res) {
+    socket.on("bingo:bingo", function(data) {
+        //TODO:: res should send all balls to check bingo card
         //result of the bingo test
-        growl.info("Bingo from "+ JSON.stringify(res))
+        if(!data.res.length) {
+            // Ja ha estat cantat
+            return;
+        } 
+        if(!data.res.length && data.res[0] === true) {
+            growl.success("Bingo correcte de "+data.user.nick);
+            $rootScope.isGameover = true;
+        } else if(data.user.id==cuser.id && data.res[0]===false) {
+            growl.warning("El bingo no és correcte");
+        }
+        
     });
+    socket.emit("rooms:participants", {id: idRoom}, function(success, msg) {
+        if(!success) {
+            console.error(msg);
+            growl.error(msg);
+            $state.go("rooms", {}, {reload: false});
+        }
+    }); 
 
     $scope.testLinia = function() {
         console.log("Sending bingo:linea");
@@ -394,36 +424,42 @@ var GameCtrl = function($scope, $rootScope, $location, $route, cfg, socket, grow
         socket.emit("bingo:bingo", {id: $scope.idRoom, numbers: $scope.cartro.list(), user: cuser});
     };
     $scope.sortirJoc = function() {
-        $location.path("/rooms");
+        $state.go("rooms", {}, {reload: false});
     };
 
 };
 
 
-LandingCtrl.$inject = ["$scope", "$location", "cfg", "socket", "growl"];
-RoomsCtrl.$inject = ["$scope", "$rootScope", "$location", "cfg", "socket", "growl"];
-GameCtrl.$inject = ["$scope", "$rootScope", "$location", "$route", "cfg", "socket", "growl"]; 
+LandingCtrl.$inject = ["$scope", "$state", "cfg", "socket", "growl"];
+RoomsCtrl.$inject = ["$scope", "$rootScope", "$state", "cfg", "socket", "growl"];
+GameCtrl.$inject = ["$scope", "$rootScope", "$state", "cfg", "socket", "growl"]; 
 
 app.controller("LandingCtrl", LandingCtrl);
 app.controller("RoomsCtrl", RoomsCtrl);
 app.controller("GameCtrl", GameCtrl); 
 
-app.config(['$routeProvider', 'growlProvider',
-    function config($routeProvider, growlProvider) {
-      $routeProvider.
-        when('/', {
-          templateUrl: 'landing.html',
-          controller: 'LandingCtrl'
+app.config(['$stateProvider', '$urlRouterProvider', 'growlProvider',
+    function config($stateProvider, $urlRouterProvider, growlProvider) {
+      $urlRouterProvider.otherwise("/");
+      $stateProvider.
+        state('home', {
+            url: '/',
+            templateUrl: 'landing.html',
+            controller: 'LandingCtrl',
+            reload: false
         }).
-        when('/rooms', {
-          templateUrl: 'rooms.html',
-          controller: 'RoomsCtrl'
+        state('rooms', {
+            url: '/rooms',
+            templateUrl: 'rooms.html',
+            controller: 'RoomsCtrl',
+            reload: false
         }).
-        when('/game/:idroom', {
+        state('game', {
+            url: '/game/:idroom',
             templateUrl: 'game.html',
-            controller: 'GameCtrl'
-        }). 
-        otherwise('/');
+            controller: 'GameCtrl',
+            reload: false
+        });
 
         growlProvider.onlyUniqueMessages(true);
         growlProvider.globalTimeToLive(5000);

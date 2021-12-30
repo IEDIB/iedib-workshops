@@ -17,7 +17,7 @@
         this._handlers = {};
     };
     SocketClientLocal.prototype = {
-        off: function () {
+        removeAllListeners: function () {
             // Unregister all events
             this._handlers = {};
         },

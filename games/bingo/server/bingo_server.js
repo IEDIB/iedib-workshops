@@ -1,10 +1,12 @@
 const createServer = require("http").createServer;
 const path = require("path");
-const Server = require("socket.io");
+const Socketio = require("socket.io");
 const BingoClassic = require("./bingo_classic")
+const BingoDerivades = require("./bingo_derivades")
+const BingoEquacions = require("./bingo_equacions")
 
 const httpServer = createServer();
-const io = new Server(httpServer, {
+const io = new Socketio.Server(httpServer, {
   // options
 });
 
@@ -43,14 +45,18 @@ io.on("connection", (socket) => {
         joined[roomId] = [];
         // Added type of room (the application decides which type of Bingo wants)
         rooms[roomId] = {id: roomId, idUser: k.idUser, nick: k.nick, type: k.type || 'eqn', created: new Date()};
-        io.emit("rooms:available", Object.values(rooms));
-        socket.emit("rooms:info", rooms[k.id]);
+        io.emit("rooms:available", Object.values(rooms)); 
         cb && cb(true, "S'ha creat la sala amb id "+roomId);
+    });
+
+    socket.on("rooms:info", function(k) { 
+       socket.emit("rooms:info", rooms[k.id]);
     });
 
     socket.on("rooms:available", function() {
         socket.emit("rooms:available", Object.values(rooms));
     });
+
     socket.on("rooms:participants", function(k) {
         if(!rooms[k.id]) {
             console.log("Asking participants of invalid room"); 
@@ -145,6 +151,7 @@ io.on("connection", (socket) => {
         if(joined[k.id]) { 
             if(joined[k.id].length > MAX_USER_PER_ROOM) {
                 //users limit per room
+                io.to(k.id).emit("rooms:participants", joined[k.id])
                 cb && cb(false, "La sala "+k.id+" està plena. Ja conté "+ MAX_USER_PER_ROOM + " jugadors. Creau o entrau a una altra sala.");
                 return;
             }
@@ -155,13 +162,18 @@ io.on("connection", (socket) => {
                 found = joined[k.id][i].idUser == k.idUser;
                 i++;
             }
+            if(socket.lastRoom) {
+                socket.leave(socket.lastRoom);
+            }
+            socket.lastRoom = k.id; 
             if(!found) { 
                 joined[k.id].push({idUser: k.idUser, nick: k.nick});
-                // Join room and send only to the room
-                socket.join(k.id);
             } 
+            // Join room and send only to the room
+            socket.join(k.id);
            
-            io.to(k.id).emit("rooms:participants", joined[k.id])
+            console.log("Emetent participants ", joined[k.id])
+            io.to(k.id).emit("rooms:participants", joined[k.id]);
             cb && cb(true, "T'has unit a la sala " + k.id);
         } else {
             cb && cb(false, "La sala " + k.id + " ja no existeix.");
@@ -174,7 +186,16 @@ io.on("connection", (socket) => {
         console.log("Bingo start ", k)
         // Some participant of the room id has informed that the game is about to start
         // Create the bingo instance
-        const bingo = new BingoClassic();
+        const room = rooms[k.id];
+
+        let bingo = null;
+        if(room.type === 'eqn') {
+            bingo = new BingoEquacions();
+        } else if (room.type === 'dif') {
+            bingo = new BingoDerivades();
+        } else {
+            bingo = new BingoClassic();
+        }
         // and bind the timer to this bingo instance
         bingos[k.id] = bingo;
 
@@ -194,7 +215,7 @@ io.on("connection", (socket) => {
         });
 
         // Inform to all other participants in the room
-        io.to(k.id).emit("bingo:start");
+        io.to(k.id).emit("bingo:start", k.id);
 
         // Actually trigger the bingo timer now, with a delay of 4 seconds
         bingo.trigger(4);
@@ -257,5 +278,5 @@ io.on("connection", (socket) => {
 
 });
 
-console.log("Bingo server listening on port 3000");
-httpServer.listen(3000);
+console.log("Bingo server listening on port 3333");
+httpServer.listen(3333);

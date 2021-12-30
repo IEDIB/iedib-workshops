@@ -22,7 +22,7 @@ function BingoClassic() {
                 self.nextballNotifiers[i](nextBall);
             }
             // launch next interval
-            self.timer.play(BALL_INTERVAL);
+            self.timer.play(nextBall.ttl || BALL_INTERVAL);
         } else {
             for (var i = 0, ln=self.gameoverNotifiers.length; i < ln; i++) { 
                 self.gameoverNotifiers[i](null);
@@ -39,7 +39,7 @@ BingoClassic.prototype.init = function() {
     this.bolles = [];
     for (var i = 0; i < NUM_BOLLES; i++) { 
         // Bingo classic, únicament la bolla
-        this.bolles.push(new U.Bolla(i+1, this.nombres[i]));
+        this.bolles.push(this._createBall(i, this.nombres[i]));
     }
     // start the timer
     this.timer && this.timer.play();
@@ -138,6 +138,12 @@ BingoClassic.prototype.pause = function() {
 BingoClassic.prototype.play = function() {
     this.timer && this.timer.play();
 };
+ 
+BingoClassic.prototype._createBall = function(id, number) {
+    var translations = {"ca-ES": "El "+number, "es-ES": "El "+number};
+    return new U.Bolla(id+1, number, number+"", translations);
+};
+
 
 
 // Expose class

@@ -122,11 +122,16 @@
                 // Join room and send only to the room
                 socket.join(k.id);
                 ioServerLocal.to(k.id).emit("rooms:participants", joined[k.id])
-                socket.emit("rooms:info", rooms[k.id]);
+                
                 cb && cb(true, "T'has unit a la sala " + k.id);
             } else {
                 cb && cb(false, "La sala " + k.id + " ja no existeix.");
             }
+        });
+
+        
+        socket.on("rooms:info", function(k) { 
+            socket.emit("rooms:info", rooms[k.id]);
         });
 
         socket.on("bingo:start", function (k) {
@@ -156,7 +161,7 @@
     
 
             // Inform to all other participants in the room
-            ioServerLocal.to(k.id).emit("bingo:start");
+            ioServerLocal.to(k.id).emit("bingo:start", k.id);
 
             // Actually trigger the bingo timer now, with a delay of 4 seconds
             bingo.trigger(4);
