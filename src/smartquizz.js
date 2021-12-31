@@ -4,7 +4,7 @@ window.IB.sd =  window.IB.sd || {};
     /**
      * This component requires that other components are loaded in page
      */
-    var hasSections = window.IB.sd['sections']!=null;
+    var hasSections = window.IB.sd['tiles']!=null;
     var hasIAPace = window.IB != null && window.IB.iapace != null;
     var hasOverlay = window.Overlay != null;
     var hasConfetti = window.Confetti != null;
@@ -78,7 +78,7 @@ window.IB.sd =  window.IB.sd || {};
 
         //Do autocollapse of sections if it applies
         if(hasSections) {
-            var sectionInstances = Object.values(IB.sd['sections'].inst || {});
+            var sectionInstances = Object.values(IB.sd['tiles'].inst || {});
             for(var ks=0, lks=sectionInstances.length; ks<lks; ks++) {
                 sectionInstances[ks].autoCollapse && sectionInstances[ks].autoCollapse();
             }
