@@ -102,10 +102,15 @@
       //titol
       var description = aElem.innerHTML;
       var tile = new Tile(this.tileContainer, container, description, targetId);
-      tile.severity('important');
       this.sections[targetId] = tile;
     }
 
+  };
+  TilesSection.prototype.autoCollapse = function(){};
+  TilesSection.prototype.severity = function(which, t) {
+    if(which && this.sections[which]) {
+        this.sections[which].severity(t);
+    }  
   };
   TilesSection.prototype.dispose = function () {
     var keys = Object.keys(this.sections);
