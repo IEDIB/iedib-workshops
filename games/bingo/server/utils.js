@@ -43,20 +43,45 @@ const shuffle = function (aList) {
     return cloned;
 };
 
-function Bolla(id, number, latex, translations, ttl) {
+const pick = function(lst) {
+    const j = Math.floor(Math.random()*lst.length);
+    return lst[j];
+};
+
+const equalSets = function(l1, l2) {
+    if(l1.length != l2.length) {
+        return false;
+    }
+    for(var i=0; i<l1.length; i++) {
+        if(l2.indexOf(l1[i])<0) {
+            return false;
+        }
+    }
+    for(var i=0; i<l2.length; i++) {
+        if(l1.indexOf(l2[i])<0) {
+            return false;
+        }
+    }
+    return true;
+};
+
+function Bolla(id, number, latex, translations, ttl, remaining) {
     this.id = id;
     this.number = number;
     this.latex = latex;
     this.speech = translations;
-    this.ttl = ttl || 5000;
+    this.ttl = ttl || 15;
+    this.remaining = remaining;
 }
 
 module.exports = {
     iran,
+    pick,
     range,
     shuffle,
     sort,
     listClone,
     Bolla,
-    extend
+    extend,
+    equalSets
 }

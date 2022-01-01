@@ -116,9 +116,7 @@ angular.module('bingoApp.services', [])
         restrict: 'AE',
         link: function (scope, element) {
             var text = element.html();
-            if (element[0].tagName === 'DIV') {
-                if (mathDefaults.center)
-                    element.addClass('text-center');
+            if (element[0].tagName === 'DIV') { 
                 text = '\\displaystyle {' + text + '}';
                 element.addClass('katex-outer').html();
             }
@@ -218,6 +216,22 @@ app.directive('bingoCartro', function() {
 app.filter('initials', function() {
     return function(input) {
       return (angular.isString(input) && input.length > 0) ? input.charAt(0).toUpperCase() : "?";
+    }
+});
+app.filter('minsec', function() {
+    var str2 = function(x) { 
+        if(x < 10) {
+            return "0"+x;
+        }
+        return ""+x;
+    }
+    return function(seconds) {
+        if(!seconds || seconds < 0) {
+            return "00:00";
+        }
+        var min = Math.floor(seconds / 60);
+        var sec = seconds % 60;
+        return str2(min)+":"+str2(sec);
     }
 });
 
@@ -354,7 +368,7 @@ var RoomsCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
  *  THE GAME CONTROLLER
  * 
  * **/
-var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) { 
+var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl, $interval) { 
     socket.removeAllListeners();
     var cuser = cfg.getUser();
     if(!cuser) {
@@ -371,9 +385,10 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
     var idRoom = $state.params.idroom;
     console.log("Joining room "+idRoom);
     socket.emit("rooms:join", {id: idRoom, idUser: cuser.idUser, nick: cuser.nick}, function(success, msg){
-        console.log("RESULT");
+        console.log("RESULT", success, msg);
         if(!success) {
             growl.error(msg);
+            $state.go("rooms");
         }  
     });  
 
@@ -439,11 +454,23 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
     });
 
     $scope.onSubmitStart = function() {
-        socket.emit("bingo:start", {id: $scope.idRoom});
+        socket.emit("bingo:start", {id: $scope.idRoom}, function(res) {
+            if(!res) {
+                // Bingo cannot be started
+                // TODO tell the other participants
+                growl.error("No ha estat possible començar la partida.");
+                $state.go("rooms");
+            }
+        });
     };
 
 
     // Game is running
+    var timeoutID = null;
+    
+    //TODO: set according to server
+    $scope.remainBalls = 30;
+    $scope.nextAsked = true;
 
     socket.on("bingo:nextball", function(ball) {
         // check if this ball.id is already here
@@ -456,6 +483,8 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
         if(found) {
             return;
         }
+        $scope.nextAsked = false;
+
         //TODO check
         //TODO check the ball.id in order to detect missing balls
 
@@ -465,6 +494,21 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
         if(!$scope.mute) {
             BingoUtils.speak(ball.speech);
         }
+
+        // Comptadors
+        console.log(ball);
+
+        $scope.remainBalls = ball.remaining;
+        $scope.remainTime = ball.ttl;
+        if(timeoutID) {
+            $interval.cancel(timeoutID);
+        }
+        timeoutID = $interval(function() { 
+            $scope.remainTime -= 1;
+            if($scope.remainTime <= 0 ) {
+                $interval.cancel(timeoutID);
+            }
+        }, 1000);
     });
     socket.on("bingo:gameover", function() {
         //the game has finished
@@ -521,6 +565,11 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
     };
     $scope.sortirJoc = function() {
         $state.go("rooms");
+    }; 
+    $scope.askNext = function() {
+        console.log("nextAsked");
+        $scope.nextAsked = true;
+        socket.emit("bingo:asknext", {id: $scope.idRoom, user: cuser});
     };
 
 };
@@ -533,7 +582,7 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
  * **/
 LandingCtrl.$inject = ["$scope", "$state", "cfg", "socket", "growl"];
 RoomsCtrl.$inject = ["$scope", "$rootScope", "$state", "cfg", "socket", "growl"];
-GameCtrl.$inject = ["$scope", "$rootScope", "$state", "cfg", "socket", "growl"]; 
+GameCtrl.$inject = ["$scope", "$rootScope", "$state", "cfg", "socket", "growl", "$interval"]; 
 
 app.controller("LandingCtrl", LandingCtrl);
 app.controller("RoomsCtrl", RoomsCtrl);

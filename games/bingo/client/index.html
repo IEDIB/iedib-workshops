@@ -47,7 +47,7 @@
             <div class="view view_rooms">
                 <bingo-header info="headerInfo"></bingo-header>
                 <br> 
-                <h3 class="text-bright">Sales actives  {{workingMode}}
+                <h3 class="text-bright">Sales disponibles  {{workingMode}}
                     <button ng-show="!isOffline" class="btn btn-sm btn-success btn-round" id="create_room" title="Crear una nova sala" ng-click="newroom()">
                         <span>+</span> </button>
                     </h3>
@@ -108,8 +108,14 @@
 
                 <div style="width:80%;background:#483232;border:1px dotted yellow; padding:20px;margin:10px auto;">
                 <!--<div growl inline="true" reference="2"></div>-->
-                <div style="overflow-y:auto;height:100px;">
-                    <div ng-repeat="b in balls" style="display: inline-block; border: 1px solid brown; padding: 2px; margin: 5px;">
+                <p ng-show="bingoStarted">
+                    Queden {{remainBalls}} bolles  -  Propera bolla en <span ng-class="{'blink_me': (remainTime<=5)}">{{remainTime | minsec}}</span>
+
+                    -  <button ng-click="askNext()" ng-disabled="nextAsked || remainTime <=5 ">Demana la següent</button>
+                    </p>
+                
+                 <div style="overflow-y:auto;height:100px;">
+                    <div ng-repeat="b in balls" class="bingo_ball">
                         <div style="display: inline-block;" unsafe-html="b.latex"></div>
                     </div>
                 </div>

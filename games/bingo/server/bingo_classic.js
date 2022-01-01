@@ -7,11 +7,14 @@ const U = require('./utils');
 const Timer = require('./timer');
 
 function BingoClassic() {
+    this.isPlaying = false;
+    this.askedParticipants = [];
     this.gameoverNotifiers = [];
     this.nextballNotifiers = [];
     this.timer = null;
     this.lineaOwner = null;
     this.winner = null;
+    this.itera = 0;
 
     //Define the timer
     const self = this;
@@ -33,22 +36,26 @@ function BingoClassic() {
 BingoClassic.prototype.init = function() {
     const self = this;
     this.itera = 0;
+    this.askedParticipants = [];
     this.nombres = U.shuffle(U.range(1, NUM_BOLLES));
     this.nombres_trets = [];
     // Prepara objectes per a cada bolla
     this.bolles = [];
     for (var i = 0; i < NUM_BOLLES; i++) { 
         // Bingo classic, únicament la bolla
-        this.bolles.push(this._createBall(i, this.nombres[i]));
+        this.bolles.push(this._createBall(i, this.nombres[i], NUM_BOLLES-i-1));
     }
     // start the timer
+    this.isPlaying = true;
     this.timer && this.timer.play();
 };
 BingoClassic.prototype.next = function() {
+    this.askedParticipants = [];
     if(this.itera >= NUM_BOLLES || this.winner != null) {
         for (var i = 0, ln=this.gameoverNotifiers.length; i < ln; i++) { 
             this.gameoverNotifiers[i](this.winner);
         } 
+        this.isPlaying = false;
         return null;
     }
     const bolla = this.bolles[this.itera];
@@ -110,6 +117,7 @@ BingoClassic.prototype.testBingo = function(userNumbers, user) {
     for (var i = 0, ln=self.gameoverNotifiers.length; i < ln; i++) { 
         self.gameoverNotifiers[i](this.winner);
     } 
+    this.isPlaying = false;
     return [true];
 };
 
@@ -121,6 +129,7 @@ BingoClassic.prototype.on = function(evtname, cb) {
     }
 };
 BingoClassic.prototype.off = function() {
+    this.isPlaying = false;
     this.nextballNotifiers = [];
     this.gameoverNotifiers = [];
     this.timer && this.timer.pause();
@@ -138,10 +147,22 @@ BingoClassic.prototype.pause = function() {
 BingoClassic.prototype.play = function() {
     this.timer && this.timer.play();
 };
- 
-BingoClassic.prototype._createBall = function(id, number) {
+BingoClassic.prototype.canSendNext = function(idUser, currentParticipants) {
+    if(this.askedParticipants.indexOf(idUser) < 0) {
+        this.askedParticipants.push(idUser);
+    }
+    if(U.equalSets(this.askedParticipants, currentParticipants)) {
+        this.timer && this.timer.pause();
+        this.timer && this.timer.play(1);
+        this.askedParticipants = []; 
+        return true;
+    }
+    return false;
+};
+
+BingoClassic.prototype._createBall = function(id, number, remaining) {
     var translations = {"ca-ES": "El "+number, "es-ES": "El "+number};
-    return new U.Bolla(id+1, number, number+"", translations);
+    return new U.Bolla(id+1, number, number+"", translations, remaining);
 };
 
 

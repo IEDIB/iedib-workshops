@@ -150,6 +150,12 @@ io.on("connection", (socket) => {
         console.log("Passed", k)
         console.log("Current joined ", joined, joined[k.id])
         if(joined[k.id]) { 
+
+            if(bingos[k.id]) {
+                cb && cb(false, "La sala està jugant en aquests moments. Esperau que acabi.");
+                return;
+            }
+
             if(joined[k.id].length > MAX_USER_PER_ROOM) {
                 //users limit per room
                 io.to(k.id).emit("rooms:participants", joined[k.id])
@@ -181,13 +187,23 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("bingo:start", function(k){
-        //TODO:: IMPORTANT 
-        // Prevent starting a room twice!!!!!
+    socket.on("bingo:start", function(k, cb){
+       
         console.log("Bingo start ", k)
         // Some participant of the room id has informed that the game is about to start
         // Create the bingo instance
         const room = rooms[k.id];
+        if(!room) {
+            cb && cb(false, 'La sala '+ k.id + ' no existeix.' );
+            return;
+        }
+
+        // Prevent starting a room twice!!!!!
+        if(bingos[k.id] && bingos[k.id].isPlaying) {
+            cb && cb(false, 'La sala ja està jugant.' );
+            return; 
+        } 
+
 
         let bingo = null;
         if(room.type === 'eqn') {
@@ -251,7 +267,27 @@ io.on("connection", (socket) => {
        
     });
 
-
+    socket.on("bingo:asknext", function(k, cb) {
+        console.log("asknext", k);
+        // Asks for the next ball 
+        // if all users have asked then timer stops and sends the next ball
+        if(bingos[k.id]) {
+            var all = joined[k.id];
+            var participants = [];
+            for(var i=0, len=all.length; i<len; i++) {
+                if(participants.indexOf(all[i].idUser)<0) {
+                    participants.push(all[i].idUser);
+                }
+            }
+            if(bingos[k.id].canSendNext(k.user.idUser, participants)) {
+                console.log("OK. Hauria d'enviar el següent");
+                cb && cb(true)
+                return;
+            }
+        }
+        cb && cb(false);
+    });
+  
     socket.on("bingo:bingo", function(k) {
         // Ask for linea check
         const bingo = bingos[k.id];
