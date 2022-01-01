@@ -1,7 +1,7 @@
 {
-  "name": "iedib-atto-snippets-dynamic",
+  "name": "iedib-workshops",
   "version": "1.0.0",
-  "description": "Dynamic snippets @ IEDIB",
+  "description": "Components for IEDIB open workshops",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IEDIB/iedib-atto-snippets-dynamic.git"
+    "url": "git+https://github.com/IEDIB/iedib-workshops.git"
   },
   "keywords": [
     "Snippets",
@@ -18,21 +18,19 @@
   "author": "IEDIB",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/IEDIB/iedib-atto-snippets-dynamic/issues"
+    "url": "https://github.com/IEDIB/iedib-workshops/issues"
   },
-  "homepage": "https://github.com/IEDIB/iedib-atto-snippets-dynamic#readme",
+  "homepage": "https://github.com/IEDIB/iedib-workshops#readme",
   "dependencies": {
     "ejs": "^3.1.6",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "handlebars": "^4.7.7",
     "js-beautify": "^1.14.0",
-    "js-yaml": "^2.0.5",
-    "socket.io": "^4.4.0",
+    "js-yaml": "^2.0.5", 
     "uglify-js": "^2.4.24"
   },
   "devDependencies": {
-    "@types/socket.io": "^3.0.2",
-    "cors": "^2.8.5"
+    "@types/socket.io": "^3.0.2"
   }
 }
