@@ -9,6 +9,7 @@ const fs = require('fs')
 
 app.use('/assets', express.static('./build/'));
 app.use('/assets2', express.static('../iedib-atto-snippets-misc/styles/'));
+app.use('/bingo', express.static('./games/bingo/client/'));
 
 app.get('/guiaus/:page', (req, res) => {
     const p = req.params;    

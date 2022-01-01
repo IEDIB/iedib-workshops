@@ -1,10 +1,17 @@
-
-// Socket service
+/** 
+ * 
+ *  A SEPARATE MODULE DECLARING SERVICES
+ * 
+ * **/
 angular.module('bingoApp.services', [])
     .value('version', '0.1')
     .factory('socket', function($rootScope) { 
-    //var socket = io.connect("http://127.0.0.1:3000");
-    var socket = io.connect("https://piworld.es/");
+    var socket = null;
+    if(window.BINGO_DEV) {
+        socket = io.connect("http://127.0.0.1:3333");
+    } else {
+        socket = io.connect("https://piworld.es/");
+    }
     var socketLocal = ioClientLocal.connect();
     var mode = {method: 'remote'};
     /*if(!socket.connected) {
@@ -79,14 +86,78 @@ angular.module('bingoApp.services', [])
             }
             sessionStorage.setItem("IB.games", JSON.stringify(IBgames));
             return IBgames.user;
+        },
+        getBingoFlavor: function() {
+            if(window.BINGO_FLAVOR == 'eqn') {
+                return 'E q u a c i o n s';
+            } else  if(window.BINGO_FLAVOR == 'dif') {
+                return 'D e r i v a d e s';
+            } else  if(window.BINGO_FLAVOR == 'che') {
+                return 'Q u í m i c a';
+            } else {
+                window.BINGO_FLAVOR == 'cla'
+                return 'C l à s s i c';
+            }
         }
     }
-});
+})
+.directive('katex', [function () {
+
+    var render = function(katex, text, element) {
+        try {
+            katex.render(text, element[0]);
+        }
+        catch(err) {
+            element.html("<div class='alert alert-danger' role='alert'>" + err + "</div>");
+        }
+    }
+
+    return {
+        restrict: 'AE',
+        link: function (scope, element) {
+            var text = element.html();
+            if (element[0].tagName === 'DIV') {
+                if (mathDefaults.center)
+                    element.addClass('text-center');
+                text = '\\displaystyle {' + text + '}';
+                element.addClass('katex-outer').html();
+            }
+            render(katex, text, element);
+        }
+    };
+}])
+.directive('unsafeHtml', ['$compile', function($compile) {
+    return function($scope, $element, $attrs) {
+        var compile = function( newHTML ) { // Create re-useable compile function
+            newHTML = $compile(newHTML)($scope); // Compile html
+            $element.html('').append(newHTML); // Clear and append it
+        };
+
+        var htmlName = $attrs.unsafeHtml; // Get the name of the variable 
+                                              // Where the HTML is stored
+
+        $scope.$watch(htmlName, function( newHTML ) { // Watch for changes to 
+                                                      // the HTML
+            if(!newHTML) return;
+            compile(newHTML);   // Compile it
+        });
+
+    };
+}]);
 	
 
-
+/** 
+ * 
+ *  THE MAIN APP MODULE AND ITS DEPENDENCIES
+ * 
+ * **/
 var app = angular.module("bingoApp", ['ui.router', 'bingoApp.services', 'angular-growl']);
 
+/** 
+ * 
+ *  DECLARE HERE ALL DIRECTIVES
+ * 
+ * **/
 app.directive('bingoHeader', function() {
     return {
       restrict: 'E',
@@ -99,7 +170,7 @@ app.directive('bingoHeader', function() {
       '     <h2 ng-bind="headerInfo.nick | initials" title="{{headerInfo.nick}}"></h2>'+
       '</div>'+
       ' <div>'+
-      '     <h2>B I N G O - A P P</h2>'+
+      '     <h2>B I N G O</h2>'+
       '     <h3 ng-bind="headerInfo.typeName"></h3>'+
       ' </div>'+
       '<div class="room_exit" ng-show="headerInfo.id">'+
@@ -139,6 +210,11 @@ app.directive('bingoCartro', function() {
     };
 });
 
+/** 
+ * 
+ *  DECLARE HERE ALL FILTERS
+ * 
+ * **/
 app.filter('initials', function() {
     return function(input) {
       return (angular.isString(input) && input.length > 0) ? input.charAt(0).toUpperCase() : "?";
@@ -147,17 +223,14 @@ app.filter('initials', function() {
 
 app.run(function($rootScope, cfg, socket, growl, $state, $window, $transitions) {
  
-    
+    // Page unload
     $window.addEventListener('beforeunload', function(e) { 
         var cuser = cfg.getUser();
         if(cuser) { 
+            // Ask to leave all rooms where this user is into.
             socket.emit("rooms:leave", {id: '*', idUser: cuser.idUser});
-        }
-        //e.preventDefault();
-        //e.returnValue = '';
-        //return;
+        } 
     }); 
-     
 
     //Detect offline operation
     $rootScope.$on("method", function(evt, value) { 
@@ -174,7 +247,7 @@ app.run(function($rootScope, cfg, socket, growl, $state, $window, $transitions) 
         var previous = transition.from();
         var current = transition.to();
        
-        if(current.name!="game") {
+        if(current.name != "game") {
              var params = transition.params('from'); 
              var idRoom = params.idroom;
              var cuser = cfg.getUser();
@@ -187,6 +260,13 @@ app.run(function($rootScope, cfg, socket, growl, $state, $window, $transitions) 
      
 });
  
+
+/** 
+ * 
+ *  THE LANDING PAGE CONTROLLER
+ *  NICK AND INSTRUCTIONS
+ * 
+ * **/
 var LandingCtrl = function($scope, $state, cfg, socket, growl) { 
     socket.removeAllListeners();
     var cuser = cfg.getUser();
@@ -194,9 +274,9 @@ var LandingCtrl = function($scope, $state, cfg, socket, growl) {
     $scope.headerInfo = {
         nick: $scope.nick,
         id: null,
-        typeName: 'E q u a c i o n s',
+        typeName: cfg.getBingoFlavor(),
         exit: function() {
-            $state.go("home", {}, {reload: false});
+            $state.go("home");
         }
     };
     $scope.onKeyUp = function(keyEvent) {
@@ -210,31 +290,44 @@ var LandingCtrl = function($scope, $state, cfg, socket, growl) {
             return;
         }
         cfg.setNick($scope.nick);
-        $state.go('rooms', {}, {reload: false});
+        $state.go('rooms');
     };
 
 };
 
+
+/** 
+ * 
+ *  THE ROOMS SELECTOR CONTROLLER
+ * 
+ * **/
 var RoomsCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
     socket.removeAllListeners();
-    
     socket.emit("rooms:available");
-
 
     var cuser = cfg.getUser();
     if(!cuser) {
-        $state.go("home", {}, {reload: false});
+        $state.go("home");
     }
+
     socket.on("rooms:available", function(rooms){
-        $scope.rooms = rooms;
+        // Only filter rooms that belong to the same flavor
+        var filteredRooms = [];
+        for(var i=0, len=rooms.length; i<len; i++) {
+            var room = rooms[i];
+            if(room.type == window.BINGO_FLAVOR) {
+                filteredRooms.push(room);
+            }
+        }
+        $scope.rooms = filteredRooms;
     }); 
 
     $scope.headerInfo = {
         nick: cuser.nick,
         id: null,
-        typeName: 'E q u a c i o n s',
+        typeName: cfg.getBingoFlavor(),
         exit: function() {
-            $state.go("home", {}, {reload: false});
+            $state.go("home");
         }
     };
 
@@ -246,7 +339,7 @@ var RoomsCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
     $scope.newroom = function() { 
         //emit the room created
         var cuser = cfg.getUser();
-        socket.emit("rooms:create", {nick: cuser.nick, idUser: cuser.idUser}, function(success, msg) {
+        socket.emit("rooms:create", {nick: cuser.nick, idUser: cuser.idUser, type: window.BINGO_FLAVOR}, function(success, msg) {
             if(!success) {
                 console.error(msg);
                 growl.error(msg);
@@ -255,13 +348,17 @@ var RoomsCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
     };
 
 };
- 
 
+/** 
+ * 
+ *  THE GAME CONTROLLER
+ * 
+ * **/
 var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) { 
     socket.removeAllListeners();
     var cuser = cfg.getUser();
     if(!cuser) {
-        $state.go("home", {}, {reload: false});
+        $state.go("home");
         return;
     }
 
@@ -300,9 +397,9 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
         idUser: cuser.idUser,
         nick: cuser.nick,
         id: $scope.idRoom,
-        typeName: 'E q u a c i o n s',
+        typeName: cfg.getBingoFlavor(),
         exit: function() {
-            $state.go("home", {}, {reload: false});
+            $state.go("home");
         }
     };
 
@@ -320,10 +417,9 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
         if(participants == "invalid_room") {
             console.log("invalid room");
             //invalid room man
-            $state.go("rooms", {}, {reload: false});
+            $state.go("rooms");
             return;
-        }
-        alert("participants", participants);
+        } 
         $scope.participants = participants;
     });
 
@@ -409,7 +505,7 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
         if(!success) {
             console.error(msg);
             growl.error(msg);
-            $state.go("rooms", {}, {reload: false});
+            $state.go("rooms");
         }
     }); 
 
@@ -424,12 +520,17 @@ var GameCtrl = function($scope, $rootScope, $state, cfg, socket, growl) {
         socket.emit("bingo:bingo", {id: $scope.idRoom, numbers: $scope.cartro.list(), user: cuser});
     };
     $scope.sortirJoc = function() {
-        $state.go("rooms", {}, {reload: false});
+        $state.go("rooms");
     };
 
 };
 
 
+/** 
+ * 
+ *  REGISTER CONTROLLERS AND STATE NAVIGATION RULES
+ * 
+ * **/
 LandingCtrl.$inject = ["$scope", "$state", "cfg", "socket", "growl"];
 RoomsCtrl.$inject = ["$scope", "$rootScope", "$state", "cfg", "socket", "growl"];
 GameCtrl.$inject = ["$scope", "$rootScope", "$state", "cfg", "socket", "growl"]; 

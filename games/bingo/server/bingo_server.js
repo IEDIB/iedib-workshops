@@ -8,6 +8,7 @@ const BingoEquacions = require("./bingo_equacions")
 const httpServer = createServer();
 const io = new Socketio.Server(httpServer, {
   // options
+  cors: {origin: 'http://localhost:3000', method: ["GET", "POST"]}
 });
 
 const MAX_USER_PER_ROOM = 30;
