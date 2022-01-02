@@ -9,7 +9,7 @@
   pointer-events: none;
 }
 .pw-overlay-postit {
-  display: none; 
+  display: flex; 
   align-items: center;
   position: absolute;
   width: 50%;
@@ -21,8 +21,9 @@
   background: rgba(200,200,100);
   box-shadow: 5px 5px rgb(20,20,20);
   overflow: hidden;
-  transform: rotate(354deg) scale(0);
+  transform: scale(0);
   font-size: 90%;
+  max-width: 400px;
   line-height: normal;
 }
 /*
@@ -39,17 +40,32 @@
   left: 50%;
 }*/
 
-@keyframes pw_postit_roration {
+@keyframes pw_postit_rotation {
   0% {
       transform: scale(0) rotate(1deg); 
+      opacity: 0;
   }
   100% {
       transform: scale(1) rotate(354deg);
+      opacity: 1;
+  }
+}
+@keyframes pw_postit_fadeout {
+  0% { 
+    opacity: 1;
+  }
+  100% { 
+    opacity: 0;
   }
 }
 .pw-overlay-postit-appear {
-  animation: pw_postit_roration 800ms ease-in;
-  animation-delay: 500ms;
+  animation: pw_postit_rotation 500ms ease-in;
+  animation-delay: 250ms;
+  animation-fill-mode: forwards;
+}
+.pw-overlay-postit-disappear {
+  animation: pw_postit_fadeout 500ms ease-in;
+  animation-delay: 100ms;
   animation-fill-mode: forwards;
 }
 .pw-overlay-postit > p:first-child:before {

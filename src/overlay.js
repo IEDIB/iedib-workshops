@@ -34,37 +34,60 @@
   };
 
   var Overlay = function(el) {
+      this.visible = false;
       applyCss(el, { 
-        "position":"relative",
-        "opacity": "0.9"
+        "position":"relative" 
       });
 
       this.backdrop = createElementWithClass("div", 'pw-overlay-backdrop');
-      
       el.append(this.backdrop);
-
       this.overlay = createElementWithClass("div", 'pw-overlay-postit');
-  
+      this.pEl = document.createElement("p");
+      this.overlay.append(this.pEl);
       el.append(this.overlay);
   }
   Overlay.prototype = {
-      back: function(show) {
+      modal: function(show) {
           if(show) {
             this.backdrop.style.display = "flex"; 
           } else {
             this.backdrop.style.display = "none"; 
           }
       },
+      toggle: function() {
+        this.visible = !this.visible;
+        if(this.visible) {
+            //this.overlay.classList.remove("pw-overlay-postit-disappear");
+            this.overlay.classList.add("pw-overlay-postit-appear");
+        } else {
+            //this.overlay.classList.remove("pw-overlay-postit-appear");
+            this.overlay.classList.add("pw-overlay-postit-disappear");
+        }
+      },
       msg: function(html) {
           if(!html) {
-            this.overlay.style.display = "none";
+            //this.overlay.classList.remove("pw-overlay-postit-appear");
+            //this.overlay.classList.add("pw-overlay-postit-disappear");
+            this.pEl.innerHTML = '';
             return;
-          }
-          this.overlay.style.display = "flex";
-          var pEl = document.createElement("p");
-          pEl.innerHTML = html;
-          this.overlay.append(pEl);
-          this.overlay.classList.add("pw-overlay-postit-appear");
+          } 
+          var self = this;
+          
+          if(this.lastMsg) {
+            this.overlay.classList.remove("pw-overlay-postit-appear");
+            this.overlay.classList.add("pw-overlay-postit-disappear");
+            setTimeout(function() {
+              self.pEl.innerHTML = html;
+              self.overlay.classList.remove("pw-overlay-postit-disappear");
+              self.overlay.classList.add("pw-overlay-postit-appear");
+            }, 1000);
+          } else { 
+            self.pEl.innerHTML = html;
+            this.overlay.classList.remove("pw-overlay-postit-disappear");
+            this.overlay.classList.add("pw-overlay-postit-appear");
+          } 
+
+          this.lastMsg = html;
       }
   };
 

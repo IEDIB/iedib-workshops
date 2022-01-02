@@ -14,6 +14,17 @@
     fdvd fv dfv fd v <i class="fas fa-lightbulb"></i>
       
     <div id="A" style="height:400px;width:100%">
+        sdf
+        dsfsdfsd
+        dsfsdfsd
+
+
+        ds
+
+        ds
+
+        dsfsdfsdds
+
     </div>
  
 <script src="../src/overlay.js"></script>
@@ -22,9 +33,18 @@
 var el = document.getElementById("A");
 var overlay = new Overlay(el);
 var msg = "Genial! Estudia les seccions marcades i després fes les activitats de peu de pàgina.dsfsdf";
-overlay.back(true);
 overlay.msg(msg);
- 
+overlay.modal(true);
+
+
+setTimeout(function(){
+    overlay.msg("canvi de missatge");
+},1500);
+/*
+setTimeout(function(){
+    overlay.toggle();
+},3000);
+ */
 </script>
 </body>
 </html>
