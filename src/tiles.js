@@ -78,7 +78,7 @@
     }
   };
   Tile.prototype.dispose = function (t) {
-    this.aEl.removeEventListener("click", this.handler);
+    this.aEl.removeEventListener("click", this.handler); 
   };
 
   // Classe per crear instàncies. Aquesta classe tots els tiles i 
@@ -106,18 +106,34 @@
     }
 
   };
-  TilesSection.prototype.autoCollapse = function(){};
-  TilesSection.prototype.severity = function(which, t) {
-    if(which && this.sections[which]) {
-        this.sections[which].severity(t);
-    }  
+  TilesSection.prototype.autoCollapse = function(){
+    console.error("Autocollapse not implemented in tiles");
+  };
+  TilesSection.prototype.severity = function(t, which) {
+    if(which) {
+      if(this.sections[which]) {
+          this.sections[which].severity(t);
+      }  
+    } else {
+      // apply to all
+      var keys = Object.keys(this.sections);
+      for (var i = 0, len = keys.length; i < len; i++) {
+          this.sections[keys[i]].severity(t);
+      }
+    }
   };
   TilesSection.prototype.dispose = function () {
     var keys = Object.keys(this.sections);
     for (var i = 0, len = keys.length; i < len; i++) {
       var key = keys[i];
+      // Show all sections hidden
+      var aElem = this._sectionElems[i];
+      aElem.parentNode.style.display = "";
+
       this.sections[key].dispose();
+      this._container.dataset.active="";
     }
+
     //Get rid of panel
     this.tileContainer.remove();
   };

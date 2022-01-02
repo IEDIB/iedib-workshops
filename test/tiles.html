@@ -299,8 +299,41 @@
     </li>
 </ul>
  
+<button id="activate" class="btn btn-primary">Tiles on/off</button>
+<button id="important" class="btn btn-outline-primary">Mark as important</button>
+ 
+
+
  
 <script src="../src/tiles.js"></script>
+<script>
+ var active = true;
+var important = false;
 
+document.querySelector("#activate").addEventListener("click", function(evt){
+  active = !active;
+  var module = IB.sd['tiles'];
+  //var instances = Object.values(module.inst);
+  if(active) {
+    module.bind();
+  } else {
+    module.unbind();
+  }
+});
+
+
+document.querySelector("#important").addEventListener("click", function(evt){
+  important = !important;
+  var module = IB.sd['tiles'];
+  var instances = Object.values(module.inst); 
+  instances.forEach( (e) => {
+    if(important) { 
+         e.severity('important');
+    } else {
+         e.severity();
+    }
+  });
+});   
+</script>
 </body>
 </html>
