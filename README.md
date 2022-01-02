@@ -101,13 +101,17 @@ Dins cada `li` hi ha d'haver un `h3` amb l'atribut `data-target` que conté la q
 
 Exemple codePen: [https://codepen.io/jmulet/pen/xxXWJzd](https://codepen.io/jmulet/pen/xxXWJzd)
 
+- `toggle(id)` expands or collapses the section
+- `severity(type, id)` if id is null, the severity is applied to all sections
+- `bind()` 
+- `unbind()` 
+
 
 # smatquizz
 
 Component que agafa informació d'un qüestionari H5P i l'empra per determinar quines seccions de la pàgina s'han de recomanar.
 
 Requereix que els mòduls 'iapace' i 'tiles' estiguin carregats en la pàgina.
-
 
  
 # vnotify

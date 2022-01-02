@@ -23,10 +23,11 @@
   
   // Classe per tractar una única secció
   var Section = function(aEl) {
-      this.aEl = aEl;
+      this.aEl = aEl; //these are the h3 elements
+      this.aEl.innerHTML = "";
       this.parentLI = aEl.parentElement;
       this.aEl.classList.add("pw-section-active"); 
-      this.aEl.classList.add("pw-section-minus"); 
+      this.aEl.classList.add("pw-section-minus");  
       this.targetQuery = aEl.getAttribute('data-target');
       this.target = this.parentLI.querySelector(this.targetQuery);
       this.closed = false;
@@ -154,10 +155,30 @@
           }
         }   
       },
-      severity: function(which, t) {
-        if(which && this.sections[which]) {
-            this.sections[which].severity(t);
-        }  
+      toggle: function(which) {
+        if(which) {
+          if(this.sections[which]) {
+              this.sections[which].toggle();
+          }
+        } else {
+          var keys = Object.keys(this.sections);
+          for(var i=0, len=keys.length; i<len; i++) {
+            var key = keys[i];
+            this.sections[key].toggle();
+          }
+        }   
+      },
+      severity: function(t, which) {
+        if(which) {
+           if(this.sections[which]) {
+              this.sections[which].severity(t);
+           }
+        }  else {
+          var keys = Object.keys(this.sections);
+          for(var i=0, len=keys.length; i<len; i++) {
+            this.sections[keys[i]].severity(t);
+          }
+        }
       },
       dispose: function() {
         var keys = Object.keys(this.sections);
@@ -165,6 +186,7 @@
           var key = keys[i];
           this.sections[key].dispose();
         }
+        this._container.dataset.active="";
       }
   };
   

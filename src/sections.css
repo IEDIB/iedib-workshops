@@ -10,6 +10,7 @@ ul[role="sections"][data-active="1"] > li {
   position: relative;
  /*transform: translate(-15px, 0);*/
 }
+/*
 ul[role="sections"][data-active="1"]::before { 
   content: '';
   position:absolute; 
@@ -19,6 +20,7 @@ ul[role="sections"][data-active="1"]::before {
   height:100%;
   background: lightblue; 
 }
+*/
 ul[role="sections"] > li > h3::before {
    /* content: ' ';*/
     cursor: pointer; 
