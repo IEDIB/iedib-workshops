@@ -15,44 +15,98 @@ new Confetti(marcContenidor)
 
 Les instàncies tenen la següent interfície:
 
-- play() Produeix l'activació de l'animació
-- destroy() Elimina les estructures de dades
+- `play()` Produeix l'activació de l'animació
+- `dispose()` Elimina les estructures de dades
 
 Exemple codePen: [https://codepen.io/jmulet/pen/BadrpqJ](https://codepen.io/jmulet/pen/BadrpqJ)
 
 # iapace
 
-Determina el nivell de dificultat d'una categoria en particular
+Registra i infereix, a partir de la base de coneixement, el nivell de dificultat d'una categoria en particular
 
-Exemple codePen:
+### Instruccions d'ús:
+
+Per defecte ja es crea una instància que es troba en `window.IB.iapace`. La idea és que cada instància representi un curs diferent que empri aquesta tecnologia.
+
+Es poden crear més instàncies fent `var iapace = IAPace.load('nom_curs', nivell_defecte);`. Els mètodes que s'hi poden aplicar són
+
+- `save()` Persisteixen els canvis en localStorage
+- `drop(path)` Elimina tots els continguts de la ruta
+- `find(path)` Retorna els continguts de la ruta. Retorna null si no existeix
+- `create(path)` Crea una ruta amb el nom path
+- `findCreate(path)` La retorna i la crea si no existeix
+- `addScore(path, score)` Afegeix una puntuació de 0--10 a la ruta path
+- `inference(path)` Infereix el nivell de 0--4 que té l'alumne en aquesta ruta
+- `saveInitialEval(id, obj)` Desa la informació de l'avaluació inicial donada per l'objecte obj
+- `loadInitialEval(id)` Retorna l'objecte de l'avaluació inicial amb identificador id o null si no existeix
+
+Per facilitat es pot registrar un listener al sistema perquè avisi quan es produeix un canvi de nivell en un path
+
+`addChangeListener(function(path, oldLevel, newLevel){ ... })`
+
+o simplement cridar manualment al mètode `inference(path)` que retornarà el nivell del path.
+
+Els camps de l'objecte d'una ruta són
+  
+- `n` total de notes en aquesta categoria
+- `s` suma de totes les notes (permet calcular la mitjana)
+- `s2` suma del quadrat de les notes (permet calcular desviació típica)
+- `h` vector que conté els 4 puntuacions més recents
+
+Els camps de l'objecte avaluació inicial són
+
+- ` `
+- ` `
+
+
+Les rutes són cadenes de categories separades per punts, per exemple, 'algebra.monomis.graus' o 'dinamica.mrua'.
+
+
+
+Exemple codePen: [https://codepen.io/jmulet/pen/qBXoXqR](https://codepen.io/jmulet/pen/qBXoXqR)
+
+
 
 # overlay
 
 Superposa un missatge sobre postit sobre un contenidor pare seleccionat
 
+Es pot crear instància des de la classe
+
+`var instancia = new Overlay(contenidor);`
+
+on contenidor pot ésser un Element o la id del div en què s'ha de mostrar el postit. Els mètodes són
+
+- `back(valor)` valor: true/false si es vol mostrar un fons modal
+- `dispose(nom)` nom: 'important' o ''
+
 Exemple codePen: [https://codepen.io/jmulet/pen/qBXoXqR](https://codepen.io/jmulet/pen/qBXoXqR)
 
 # sections
 
-Organitza les seccions de la pàgina en col·lapsables
+Organitza les seccions de la pàgina en parts col·lapsables.
+
+L'element pare ha d'ésser un `ul` amb l'atribut `role="sections"`
+Dins cada `li` hi ha d'haver un `h3` amb l'atribut `data-target` que conté la query al selector que s'ha de mostrar.
 
 Exemple codePen: [https://codepen.io/jmulet/pen/KKXoBYd](https://codepen.io/jmulet/pen/KKXoBYd)
 
 # tiles 
 
-Organitza les seccions de la pàgina en un format tipus rajoles
+Organitza les seccions de la pàgina en un format tipus rajoles.
+
+L'element pare ha d'ésser un `ul` amb l'atribut `role="tiles"`
+Dins cada `li` hi ha d'haver un `h3` amb l'atribut `data-target` que conté la query al selector que s'ha de mostrar.
 
 Exemple codePen: [https://codepen.io/jmulet/pen/xxXWJzd](https://codepen.io/jmulet/pen/xxXWJzd)
 
 
 # smatquizz
 
-Component que 
+Component que agafa informació d'un qüestionari H5P i l'empra per determinar quines seccions de la pàgina s'han de recomanar.
 
 Requereix que els mòduls 'iapace' i 'tiles' estiguin carregats en la pàgina
-
-Exemple codePen:
-
+ 
 # vnotify
 
 Component que simula notificacions tipus growl del macOS
