@@ -70,9 +70,8 @@ window.IAPace = window.IAPace || {};
             if(this._changeHandlers[fullPath] || this._changeHandlers['*']) {
                 newScore = this.inference(fullPath);
             }
-            if(oldScore!=null && newScore!=null && oldScore!=newScore) {
-                this._changeHandlers[fullPath] && this._changeHandlers[fullPath](fullPath, oldScore, newScore);
-                this._changeHandlers['*'] && this._changeHandlers['*'](fullPath, oldScore, newScore);
+            if(oldScore!=null && newScore!=null && oldScore!=newScore) { 
+                this._triggerChangeEvt(fullPath, oldScore, newScore); 
             }
         },
         find: function (fullPath) {
@@ -135,8 +134,7 @@ window.IAPace = window.IAPace || {};
                 newScore = this.inference(fullPath);
             }
             if(oldScore!=null && newScore!=null && oldScore!=newScore) {
-                this._changeHandlers[fullPath] && this._changeHandlers[fullPath](fullPath, oldScore, newScore);
-                this._changeHandlers['*'] && this._changeHandlers['*'](fullPath, oldScore, newScore);
+                this._triggerChangeEvt(fullPath, oldScore, newScore); 
             }
         },
         // Level has 0=beginner, 1=learner, 2=advanced learner, 3=advanced
@@ -218,6 +216,20 @@ window.IAPace = window.IAPace || {};
                 this._changeHandlers[path] = list;
             }
             list.push(cb);
+        },
+        _triggerChangeEvt: function(path, oldValue, newValue) {
+            if(this._changeHandlers[path]) {
+                var list = this._changeHandlers[path];
+                for(var i=0, len=list.len; i<len; i++) {
+                    list[i](path, oldValue, newValue);
+                }
+            }
+            if(this._changeHandlers['*']) {
+                var list = this._changeHandlers['*'];
+                for(var i=0, len=list.len; i<len; i++) {
+                    list[i](path, oldValue, newValue);
+                }
+            }
         }
     };
 
