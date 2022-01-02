@@ -57,5 +57,5 @@ Exemple codePen:
 
 Component que simula notificacions tipus growl del macOS
 
-Exemple codePen:
+Exemple codePen: [https://codepen.io/jmulet/pen/NWaYLvN](https://codepen.io/jmulet/pen/NWaYLvN)
 
