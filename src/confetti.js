@@ -10,6 +10,7 @@
         };
    
        window.Confetti = function (container) {
+           this.playSound = true;
            this.container = container;
            this.container.style.position = "relative";
            this.canvas = document.createElement("canvas");
@@ -145,24 +146,31 @@
                this.initConfetti();
                this.canvas.style["display"]= "";
                var self = this;
-               //TODO Play sound on start!
-               var audio = new Audio('https://piworld.es/iedib/assets/sounds/magical-hit.mp3');
-               audio.addEventListener("canplaythrough", function(event) { 
-                  audio.play();
-               });
+               //Play sound on start!
+               if(this.playSound) {
+                    var audio = new Audio('https://piworld.es/iedib/assets/sounds/magical-hit.mp3');
+                    audio.addEventListener("canplaythrough", function(event) { 
+                        audio.play();
+                    });
+                }
 
-               var loop = function() {
+                var loop = function() {
                    self.render();
                    if(self.confetti.length) {
                        window.requestAnimationFrame(loop); 
                    } else {
                        //Simulation ended
-                       this.canvas.style["display"]= "none";
+                       self.canvas.style["display"]= "none";
+                       self.initialized = false;
                    }
                }; 
                window.requestAnimationFrame(loop);
            },
+           sound: function(playSound) {
+                this.playSound = playSound;
+           },
            dispose: function() {
+               this.playSound = true;
                this.initialized = false;
            }
        };
