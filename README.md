@@ -61,7 +61,7 @@ Els camps de l'objecte avaluació inicial són
 
 Les rutes són cadenes de categories separades per punts, per exemple, 'algebra.monomis.graus' o 'dinamica.mrua'.
  
-Exemple codePen: [https://codepen.io/jmulet/pen/qBXoXqR](https://codepen.io/jmulet/pen/qBXoXqR)
+Exemple codePen: [https://codepen.io/jmulet/pen/XWeEozV](https://codepen.io/jmulet/pen/XWeEozV)
 
 
 
@@ -90,6 +90,11 @@ L'element pare ha d'ésser un `ul` amb l'atribut `role="sections"`
 Dins cada `li` hi ha d'haver un `h3` amb l'atribut `data-target` que conté la query al selector que s'ha de mostrar.
 
 Exemple codePen: [https://codepen.io/jmulet/pen/KKXoBYd](https://codepen.io/jmulet/pen/KKXoBYd)
+
+- `toggle(id)` expands or collapses the section of all sections if id is null
+- `severity(type, id)` if id is null, the severity is applied to all sections
+- `bind()` 
+- `unbind()` 
 
 
 # tiles 
