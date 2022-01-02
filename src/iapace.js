@@ -20,6 +20,7 @@ window.IAPace = window.IAPace || {};
 
     // Class to for the entire frameset
     var FrameSet = function (coursename, defaultLevel) {
+        this._changeHandlers = {};
         this.coursename = coursename;
         this.defaultLevel = defaultLevel <= 4 ? defaultLevel : 4;
         this._tree = {}; //semiflat tree
@@ -55,11 +56,23 @@ window.IAPace = window.IAPace || {};
             localStorage.setItem("iapace", JSON.stringify(this._tree));
         },
         drop: function (fullPath) {
+            var oldScore = null;
+            var newScore = null;
+            if(this._changeHandlers[fullPath] || this._changeHandlers['*']) {
+                oldScore = this.inference(fullPath);
+            }
             var keys = Object.keys(this._tree[this.coursename].ch);
             for (var i = 0, l = keys.length; i < l; i++) {
                 if (keys[i].startsWith(fullPath)) {
                     delete this._tree[this.coursename].ch[keys[i]];
                 }
+            }
+            if(this._changeHandlers[fullPath] || this._changeHandlers['*']) {
+                newScore = this.inference(fullPath);
+            }
+            if(oldScore!=null && newScore!=null && oldScore!=newScore) {
+                this._changeHandlers[fullPath] && this._changeHandlers[fullPath](fullPath, oldScore, newScore);
+                this._changeHandlers['*'] && this._changeHandlers['*'](fullPath, oldScore, newScore);
             }
         },
         find: function (fullPath) {
@@ -104,6 +117,11 @@ window.IAPace = window.IAPace || {};
             return found;
         },
         addScore: function (fullPath, score) {
+            var oldScore = null;
+            var newScore = null;
+            if(this._changeHandlers[fullPath] || this._changeHandlers['*']) {
+                oldScore = this.inference(fullPath);
+            }
             var found = this.findCreate(fullPath);
             found.n += 1;
             found.s += score;
@@ -112,6 +130,13 @@ window.IAPace = window.IAPace || {};
             //most recent score history
             while (found.h.length > HISTORY_LEN) {
                 found.h.shift();
+            }
+            if(this._changeHandlers[fullPath] || this._changeHandlers['*'])  {
+                newScore = this.inference(fullPath);
+            }
+            if(oldScore!=null && newScore!=null && oldScore!=newScore) {
+                this._changeHandlers[fullPath] && this._changeHandlers[fullPath](fullPath, oldScore, newScore);
+                this._changeHandlers['*'] && this._changeHandlers['*'](fullPath, oldScore, newScore);
             }
         },
         // Level has 0=beginner, 1=learner, 2=advanced learner, 3=advanced
@@ -185,6 +210,14 @@ window.IAPace = window.IAPace || {};
         },
         toString: function () {
             return JSON.stringify(this._tree, null, 2);
+        },
+        addChangeListener: function(path, cb) {
+            var list = this._changeHandlers[path];
+            if(!list) {
+                list = [];
+                this._changeHandlers[path] = list;
+            }
+            list.push(cb);
         }
     };
 

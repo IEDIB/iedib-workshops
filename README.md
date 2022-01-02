@@ -42,7 +42,7 @@ Es poden crear més instàncies fent `var iapace = IAPace.load('nom_curs', nivel
 
 Per facilitat es pot registrar un listener al sistema perquè avisi quan es produeix un canvi de nivell en un path
 
-`addChangeListener(function(path, oldLevel, newLevel){ ... })`
+`addChangeListener("* or path", function(path, oldLevel, newLevel){ ... })`
 
 o simplement cridar manualment al mètode `inference(path)` que retornarà el nivell del path.
 
