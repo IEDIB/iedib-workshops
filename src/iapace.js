@@ -220,13 +220,13 @@ window.IAPace = window.IAPace || {};
         _triggerChangeEvt: function(path, oldValue, newValue) {
             if(this._changeHandlers[path]) {
                 var list = this._changeHandlers[path];
-                for(var i=0, len=list.len; i<len; i++) {
+                for(var i=0, len=list.length; i<len; i++) {
                     list[i](path, oldValue, newValue);
                 }
             }
             if(this._changeHandlers['*']) {
                 var list = this._changeHandlers['*'];
-                for(var i=0, len=list.len; i<len; i++) {
+                for(var i=0, len=list.length; i<len; i++) {
                     list[i](path, oldValue, newValue);
                 }
             }
