@@ -10,7 +10,15 @@ Autor: Josep Mulet Pol
 
 Superposa una animació de Confetti sobre el contenidor pare seleccionat
 
-Exemple codePen: 
+Per crear una instància s'ha d'instanciar la classe 
+new Confetti(marcContenidor)
+
+Les instàncies tenen la següent interfície:
+
+- play() Produeix l'activació de l'animació
+- destroy() Elimina les estructures de dades
+
+Exemple codePen: [https://codepen.io/jmulet/pen/BadrpqJ](https://codepen.io/jmulet/pen/BadrpqJ)
 
 # iapace
 
@@ -20,21 +28,22 @@ Exemple codePen:
 
 # overlay
 
-Superposa un missatge sobre postit sobre un cotenidor pare seleccionat
+Superposa un missatge sobre postit sobre un contenidor pare seleccionat
 
-Exemple codePen:
+Exemple codePen: [https://codepen.io/jmulet/pen/qBXoXqR](https://codepen.io/jmulet/pen/qBXoXqR)
 
 # sections
 
 Organitza les seccions de la pàgina en col·lapsables
 
-Exemple codePen:
+Exemple codePen: [https://codepen.io/jmulet/pen/KKXoBYd](https://codepen.io/jmulet/pen/KKXoBYd)
 
 # tiles 
 
 Organitza les seccions de la pàgina en un format tipus rajoles
 
-Exemple codePen:
+Exemple codePen: [https://codepen.io/jmulet/pen/xxXWJzd](https://codepen.io/jmulet/pen/xxXWJzd)
+
 
 # smatquizz
 

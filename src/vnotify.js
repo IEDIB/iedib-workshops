@@ -1,4 +1,4 @@
-var vNotify = (function() {
+(function() {
 
   var positionOption = {
     topLeft: 'topLeft',
@@ -8,6 +8,7 @@ var vNotify = (function() {
     center: 'center'
   };
 
+  // These are the defaults
   var options = {
     fadeInDuration: 1000,
     fadeOutDuration: 1000,
@@ -19,32 +20,51 @@ var vNotify = (function() {
     showClose: true
   };
 
+  var extendOptions = function(params) {
+      //clone options
+      var newparams = JSON.parse(JSON.stringify(options));
+      if(params && typeof(params)==='object') {
+        var keys = Object.keys(params);
+        for(var i=0, len=keys.length; i<len; i++) {
+          var prop = keys[i];
+          newparams[prop] = params[prop];
+        }
+      }
+      return newparams;
+  };
+
   var info = function(params) {
+    params = extendOptions(params);
     params.notifyClass = 'vnotify-info';
     return addNotify(params);
   };
 
   var success = function(params) {
+    params = extendOptions(params);
     params.notifyClass = 'vnotify-success';
     return addNotify(params);
   };
 
   var error = function(params) {
+    params = extendOptions(params);
     params.notifyClass = 'vnotify-error';
     return addNotify(params);
   };
 
   var warning = function(params) {
+    params = extendOptions(params);
     params.notifyClass = 'vnotify-warning';
     return addNotify(params);
   };
 
   var notify = function(params) {
+    params = extendOptions(params);
     params.notifyClass = 'vnotify-notify';
     return addNotify(params);
   };
 
   var custom = function(params) {
+    params = extendOptions(params);
     return addNotify(params);
   };
 
@@ -219,14 +239,18 @@ var vNotify = (function() {
     }
   };
 
-  return {
+  var setOption = function(optName, optValue) {
+    options[optName] = optValue;
+  };
+
+  window.vNotify = {
     info: info,
     success: success,
     error: error,
     warning: warning,
     notify: notify,
     custom: custom,
-    options: options,
-    positionOption: positionOption
+    setOption: setOption
+    //positionOption: positionOption
   };
 })();
