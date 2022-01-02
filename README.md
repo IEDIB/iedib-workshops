@@ -60,9 +60,7 @@ Els camps de l'objecte avaluació inicial són
 
 
 Les rutes són cadenes de categories separades per punts, per exemple, 'algebra.monomis.graus' o 'dinamica.mrua'.
-
-
-
+ 
 Exemple codePen: [https://codepen.io/jmulet/pen/qBXoXqR](https://codepen.io/jmulet/pen/qBXoXqR)
 
 
@@ -77,10 +75,12 @@ Es pot crear instància des de la classe
 
 on contenidor pot ésser un Element o la id del div en què s'ha de mostrar el postit. Els mètodes són
 
-- `back(valor)` valor: true/false si es vol mostrar un fons modal
-- `dispose(nom)` nom: 'important' o ''
+- `modal(valor)` valor: true/false si es vol mostrar un fons modal
+- `msg(text)` text: contigunt que ha de tenir el postit
 
 Exemple codePen: [https://codepen.io/jmulet/pen/qBXoXqR](https://codepen.io/jmulet/pen/qBXoXqR)
+
+
 
 # sections
 
@@ -90,6 +90,7 @@ L'element pare ha d'ésser un `ul` amb l'atribut `role="sections"`
 Dins cada `li` hi ha d'haver un `h3` amb l'atribut `data-target` que conté la query al selector que s'ha de mostrar.
 
 Exemple codePen: [https://codepen.io/jmulet/pen/KKXoBYd](https://codepen.io/jmulet/pen/KKXoBYd)
+
 
 # tiles 
 
@@ -105,7 +106,9 @@ Exemple codePen: [https://codepen.io/jmulet/pen/xxXWJzd](https://codepen.io/jmul
 
 Component que agafa informació d'un qüestionari H5P i l'empra per determinar quines seccions de la pàgina s'han de recomanar.
 
-Requereix que els mòduls 'iapace' i 'tiles' estiguin carregats en la pàgina
+Requereix que els mòduls 'iapace' i 'tiles' estiguin carregats en la pàgina.
+
+
  
 # vnotify
 
