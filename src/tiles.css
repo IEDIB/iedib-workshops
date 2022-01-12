@@ -3,6 +3,60 @@ ul[role="tiles"] {
   list-style: none;
   padding-left: 0;
 }
+@keyframes flipInX {
+  from {
+    height: 0;
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    animation-timing-function: ease-in;
+    opacity: 0;
+  }
+
+  40% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 40deg);
+    animation-timing-function: ease-in;
+  }
+
+  60% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 20deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 5deg);
+  }
+
+  to {
+    height: initial;
+    transform: perspective(400px);
+  }
+}
+@keyframes flipOutX {
+  from {
+    transform: perspective(400px);
+  }
+
+  30% {
+    transform: perspective(400px) rotate3d(1, 0, 0, 40deg);
+    opacity: 1;
+  }
+
+  to {
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    opacity: 0;
+    height: 0;
+  }
+}
+ 
+.pw-tiles-appear {
+  backface-visibility: visible !important;
+  animation: flipInX 700ms ease-in;  
+}
+.pw-tiles-disappear {
+  animation-duration: 700ms;
+  animation-name: flipOutX;
+  backface-visibility: visible !important; 
+  animation-fill-mode: forwards;
+}
 .pw-tiles-panel { 
   margin: 20px auto;
   display: flex;

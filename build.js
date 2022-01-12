@@ -17,10 +17,13 @@ const dst = "./build/"
 console.log(`> src=${src}`)
 console.log(`> dst=${dst}`)
 console.log(" ")
- 
+  
+// ALL bundle must ensure this order
+const precedences = ['overlay.js','iapace.js','sections.js','tiles.js','confetti.js','smartquizz.js']; 
+
 
 // Uglify all files
-let all = "";
+let all = new Array(precedences.length);
 let allcss = "";
 // empaqueta per categories
 const categories = {
@@ -58,7 +61,13 @@ fs.readdirSync(src).forEach( (file) => {
     } else if(result.warnings) {
         console.log(result.warnings)
     }
-    all += result.code + "\n"
+    const indx = precedences.indexOf(file)
+    if(indx >=0 ) {
+        all[indx] = result.code
+    } else {
+        all.push(result.code)
+    } 
+    
     let code = result.code;
     catObj.code.push(code);
     if(fs.existsSync(path.join(src, file.replace(".js",".css")))) {
@@ -87,16 +96,15 @@ fs.readdirSync(src).forEach( (file) => {
 
 if(allcss.length) {
     // add css
-    all = `
+    all.unshift(`
     window.IB = window.IB || {}; window.IB.sd = window.IB.sd || {}; 
     !function(){if(document.getElementById("sd_css_all")){return;}; var l = '${allcss}'; var s = document.createElement('style'); s.type = 'text/css'; s.innerHTML = l; s.id="sd_css_all"; document.getElementsByTagName('head')[0].appendChild(s);}();
-    `
-    + all
+    `)
 }
 
 // Monolithic file with everything
 target = path.join(dst, "all_iboc.min.js");
-fs.writeFileSync(target, all, {encoding:'utf8'});
+fs.writeFileSync(target, all.join('\n'), {encoding:'utf8'});
 console.log("> written " + target);
 
  

@@ -51,7 +51,10 @@
       self.active = !self.active;
       var allLi = sectionsContainer.querySelectorAll('li');
       for(var i=0, len=allLi.length; i<len; i++) {
-        allLi[i].style.display = 'none'; 
+        //allLi[i].style.display = 'none'; 
+        if(allLi[i].classList.contains('pw-tiles-appear')) {
+          toggleClasses(allLi[i], 'pw-tiles-appear', 'pw-tiles-disappear');
+        }
       }
       var allTiles = tileContainer.querySelectorAll('.pw-tile');
       for(var i=0, len=allTiles.length; i<len; i++) {
@@ -62,6 +65,8 @@
         var h3El = sectionsContainer.querySelector('h3[data-target="' + id + '"]');
         var liEl = h3El.parentNode;
         liEl.style.display = "";
+        liEl.classList.remove('pw-tiles-disappear');
+        liEl.classList.add('pw-tiles-appear');
         self.aEl.classList.add('pw-tile-active');
       } 
       
