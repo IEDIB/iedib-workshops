@@ -22,7 +22,7 @@ window.IB.sd =  window.IB.sd || {};
     }
     
     
-    var COMPONENT_NAME = "dynamic_smartquizz";
+    var COMPONENT_NAME = "smartquizz";
     if (window.IB.sd[COMPONENT_NAME]) {
         // Already loaded in page
         // Bind any remaining component
@@ -54,7 +54,7 @@ window.IB.sd =  window.IB.sd || {};
                     if(hasOverlay) {
                         elem.querySelector("iframe").style['pointer-events']="none";
                         var overlay = new Overlay(elem);
-                        overlay.back(true);
+                        overlay.modal(true);
                         overlay.msg(text);
                     }
                     /*
@@ -78,7 +78,7 @@ window.IB.sd =  window.IB.sd || {};
 
         //Do autocollapse of sections if it applies
         if(hasSections) {
-            var sectionInstances = Object.values(IB.sd['tiles'].inst || {});
+            var sectionInstances = Object.values(IB.sd['tiles'].inst || {});
             for(var ks=0, lks=sectionInstances.length; ks<lks; ks++) {
                 sectionInstances[ks].autoCollapse && sectionInstances[ks].autoCollapse();
             }
