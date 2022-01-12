@@ -100,6 +100,9 @@ ul[role="tiles"] {
   vertical-align: middle;
   z-index: 10;
 }
+ul[role="tiles"] > li {
+  overflow: hidden;
+}
 ul[role="tiles"] > li > h3 {
   position: relative; 
 } 
