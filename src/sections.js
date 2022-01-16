@@ -94,8 +94,8 @@
               console.error("Missing idQuizz in sections container");
               return;
             }
-            //retrive quizz performance from localstore
-            var provesInicials = IB.iapace._tree[IB.iapace.coursename || 'cmat0'].ia;
+            //retrive quizz performance from localstorage
+            var provesInicials = IB.iapace._tree[IB.iapace.coursename || 'tal_alg'].ia;
             if(!provesInicials) {
               console.error("Cannot find initial test "+idQuizz)
               return;
@@ -125,6 +125,9 @@
                   if (fullfilled) {
                       console.log("Must collapse ", secname);
                       this.collapse('#'+secname); 
+                  } else {
+                     // Must recommend the section as important
+                     this.severity('important', '#'+secname);
                   }
               }
             }

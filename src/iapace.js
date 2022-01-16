@@ -246,7 +246,7 @@ window.IAPace = window.IAPace || {};
         var hrefVal = "?" + (footer.href.split("?")[1] || "");
         courseId = parseUrlParams(hrefVal).id;
     }
-    coursename = coursename || courseId || "cmat0";
+    coursename = coursename || courseId || "tal_alg";
     //create a working instance
     window.IB.iapace = new FrameSet(coursename, 2);
 })(window.IAPace);

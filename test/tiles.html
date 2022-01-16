@@ -323,6 +323,17 @@ document.querySelector("#activate").addEventListener("click", function(evt){
   }
 });
 
+IB.iapace = {
+    _tree: {
+        tal_alg: {
+                ia: {
+                    "l2.monomial": {
+                        preguntes: [0, 10, 0, 10 , 10]
+                    }
+                }
+            }
+        }
+};
 
 document.querySelector("#important").addEventListener("click", function(evt){
   important = !important;
@@ -330,12 +341,16 @@ document.querySelector("#important").addEventListener("click", function(evt){
   var instances = Object.values(module.inst); 
   instances.forEach( (e) => {
     if(important) { 
-         e.severity('important');
+         //e.severity('important');
+         e.autoCollapse();
     } else {
          e.severity();
     }
   });
 });   
+
+
+
 </script>
 </body>
 </html>

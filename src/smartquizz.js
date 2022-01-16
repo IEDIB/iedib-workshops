@@ -4,12 +4,12 @@ window.IB.sd =  window.IB.sd || {};
     /**
      * This component requires that other components are loaded in page
      */
-    var hasSections = window.IB.sd['tiles']!=null;
+    var hasSections = window.IB.sd['tiles'] != null || window.IB.sd['sections'] != null ;
     var hasIAPace = window.IB != null && window.IB.iapace != null;
     var hasOverlay = window.Overlay != null;
     var hasConfetti = window.Confetti != null;
     if(!hasSections) {
-        console.error("Sections module required");
+        console.error("Sections/Tiles module required");
     }
     if(!hasIAPace) {
         console.error("IAPace module required");
@@ -32,7 +32,6 @@ window.IB.sd =  window.IB.sd || {};
     }
 
     function handleInteraction(elem, data, ds, revisited) {
-
         console.log("handle interaction");
         console.log(data, ds); 
         
@@ -56,21 +55,7 @@ window.IB.sd =  window.IB.sd || {};
                         var overlay = new Overlay(elem);
                         overlay.modal(true);
                         overlay.msg(text);
-                    }
-                    /*
-                    window.vNotify && window.vNotify.info({
-                        text: text, 
-                        title:'Resultat',
-                        fadeInDuration: 1000,
-                        fadeOutDuration: 1000,
-                        fadeInterval: 50,
-                        visibleDuration: 8000, // auto close after 5 seconds
-                        postHoverVisibleDuration: 500,
-                        position: "center", // topLeft, bottomLeft, bottomRight, center
-                        sticky: false, // is sticky
-                        showClose: true // show close button
-                      }); 
-                    */
+                    } 
                     break;
                 }
             }
@@ -79,6 +64,10 @@ window.IB.sd =  window.IB.sd || {};
         //Do autocollapse of sections if it applies
         if(hasSections) {
             var sectionInstances = Object.values(IB.sd['tiles'].inst || {});
+            for(var ks=0, lks=sectionInstances.length; ks<lks; ks++) {
+                sectionInstances[ks].autoCollapse && sectionInstances[ks].autoCollapse();
+            }
+            sectionInstances = Object.values(IB.sd['sections'].inst || {});
             for(var ks=0, lks=sectionInstances.length; ks<lks; ks++) {
                 sectionInstances[ks].autoCollapse && sectionInstances[ks].autoCollapse();
             }
@@ -98,13 +87,10 @@ window.IB.sd =  window.IB.sd || {};
                 fullfilled = condition.replace("\\gt",">").replace("\\ge",">=")
                 .replace("\\lt","<").replace("\\le","<=");
                 if (fullfilled) {
-                    if (!revisited) {
-                        console.log("Must scroll to ", sec);
+                    if (!revisited) { 
                         var aTag = $("a[name='"+ sec +"']");
                         $('html,body').animate({scrollTop: aTag.offset().top-200}, 'fast');
-                    }
-                    console.log("I would not go to ", sec);
-                    // Only one message allowed
+                    } 
                     break;
                 }
             }
