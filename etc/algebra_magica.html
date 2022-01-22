@@ -4,162 +4,165 @@
         <meta charset="utf-8">
     </head> 
     <body> 
-        <div id="magic_cont" style="color:white; background: rgb(19,8,30); padding: 15px;">
+        <div id="magic_cont" style="color:white;  background: rgb(82 65 99);
+; padding: 15px;">
 
-            <center>
-                <h1>Àlgebra màgica <i style="color:lightyellow;" class="fas fa-stars"></i></h1>
-            </center>
+    <center>
+        <h1 style="color:lightyellow;">Àlgebra màgica <i class="fas fa-stars" aria-hidden="true"></i></h1>
+    </center>
 
-        <div id="magic_steps">
-            <img src="./magic.jpeg" style="width:200px; float: left; margin:20px;" >
-            <ul style="transform: translateX(21px) translateY(41px);">
-                <li style="margin: 5px 0; width:500px;">Pensa un nombre natural qualsevol</li>
-                <li style="margin: 5px 0; width:500px;">Suma-li 2</li>
-                <li style="margin: 5px 0; width:500px;">Al resultat, el multipliques per 3</li>
-                <li style="margin: 5px 0; width:500px;">Resta 5</li>
-                <li style="margin: 5px 0; width:500px;">Resta el nombre que havies pensat</li>
-                <li style="margin: 5px 0; width:500px;">Multiplica per 2 el resultat anterior</li>
-                <li style="margin: 5px 0; width:500px;">Resta 1</li>
-            </ul>
-        </div>
-        <p><br></p>
-        
-        <div id="magic_interact_panel" style="opacity: 0; clear: both;">
-            <p>Diguem el resultat que has obtingut</p>
-            <input id="magic_res" type="number" min="1">
-            <button class="btn btn-outline-primary" id="magic_done">Fet</button>
-        </div>
+    <div id="magic_steps">
+        <img src="https://piworld.es/avirtual/draftfile.php/25/user/draft/391321254/magic.jpeg" alt="" width="300" height="300" role="presentation" style="width:200px; float: left; margin:20px;" class="img-responsive atto_image_button_text-bottom">
+        <ul style="transform: translateX(21px) translateY(15px);">
+            <li style="margin: 0px 0;">Pensa un nombre natural qualsevol</li>
+            <li style="margin: 0px 0;">Suma-li 2</li>
+            <li style="margin: 0px 0;">Al resultat, el multipliques per 3</li>
+            <li style="margin: 0px 0;">Resta 5</li>
+            <li style="margin: 0px 0;">Resta el nombre que havies pensat</li>
+            <li style="margin: 0px 0;">Multiplica per 2 el resultat anterior</li>
+            <li style="margin: 5px 0;">Resta 1</li>
+        </ul>
+    </div>
+    <p><br></p>
 
-        <div id="magic_predict_panel" style="opacity: 0;">
+    <div id="magic_interact_panel" style="opacity: 0; clear: both;">
+        <p>Diguem el resultat que has obtingut</p>
+        <input id="magic_res" type="number" min="1">
+        <button class="btn btn-primary" id="magic_done">Fet</button>
+    </div>
 
-            <center>
+    <div id="magic_predict_panel" style="opacity: 0;">
+
+        <center>
             <h3 id="magic_predict"></h3>
-            <center>
-            
-            <button id="magic_repeat" class="btn">Torna a començar</button>
 
-            <div id="magic_reveal" style="opacity: 0; background: whitesmoke; color: rgb(19,8,30); padding: 15px; margin:-10px;">
+            <button id="magic_repeat" class="btn btn-info">Torna a començar</button>
+        </center>
+
+        <div id="magic_reveal" style="opacity: 0; background: whitesmoke; color: rgb(19,8,30); padding: 15px; margin:-10px;">
             <p><br></p>
             <h3><b>Quin és el truc?</b></h3>
             <p>Es tracta de traduir al llenguatge algebraic cada frase anterior:</p>
-            <table class="table table-stripped">
-                <tr>
-                    <td>Pensa un nombre natural qualsevol</td>
-                    <td>$x$</td>
-                </tr>
-                <tr>
-                    <td>Suma-li 2</td>
-                    <td>$x+2$</td>
-                </tr>
-                <tr>
-                    <td>Al resultat, el multipliques per 3</td>
-                    <td>$3(x+2)=3x+6$</td>
-                </tr>
-                <tr>
-                    <td>Resta 5</td>
-                    <td>$3x+6-5=3x+1$</td>
-                </tr>
-                <tr>
-                    <td>Resta el nombre que havies pensat</td>
-                    <td>$3x+1-x=2x+1$</td>
-                </tr>
-                <tr>
-                    <td>Multiplica per 2 el resultat anterior</td>
-                    <td>$2(2x+1)=4x+2$</td>
-                </tr>
-                <tr>
-                    <td>Resta 1</td>
-                    <td>$4x+1$</td>
-                </tr>
-            </table>
-        
-            <p>Aleshores, quan l'ordinador et demana el resultat de l'operació, tú li estàs dient que val $4x+1$.
-               Què fa ara l'ordinador? Per exemple, si tú li has dit 29, l'ordinador resta 1 i obté 28. A continuació
-               divideix entre 4 i respon que el nombre que havies pensat era el 7. Fixa't que el que està fent és
-               resoldre una petita equació de primer grau $4x+1=29$, que ja sabem que té solució $x=7$.
+            <center>
+                <table class="table table-stripped">
+                    <tbody>
+                        <tr>
+                            <td>Pensa un nombre natural qualsevol</td>
+                            <td>\(x\)</td>
+                        </tr>
+                        <tr>
+                            <td>Suma-li 2</td>
+                            <td>\(x+2\)</td>
+                        </tr>
+                        <tr>
+                            <td>Al resultat, el multipliques per 3</td>
+                            <td>\(3(x+2)=3x+6\)</td>
+                        </tr>
+                        <tr>
+                            <td>Resta 5</td>
+                            <td>\(3x+6-5=3x+1\)</td>
+                        </tr>
+                        <tr>
+                            <td>Resta el nombre que havies pensat</td>
+                            <td>\(3x+1-x=2x+1\)</td>
+                        </tr>
+                        <tr>
+                            <td>Multiplica per 2 el resultat anterior</td>
+                            <td>\(2(2x+1)=4x+2\)</td>
+                        </tr>
+                        <tr>
+                            <td>Resta 1</td>
+                            <td>\(4x+1\)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </center>
+            <p>Aleshores, quan l'ordinador et demana el resultat de l'operació, tú li estàs dient que val \(4x+1\). Què fa ara l'ordinador? Per exemple, si tú li has dit 29, l'ordinador resta 1 i obté 28. A continuació divideix entre 4 i respon que el nombre
+                que havies pensat era el 7. Fixa't que el que està fent és resoldre una petita equació de primer grau \(4x+1=29\), que ja sabem que té solució \(x=7\).
             </p>
-            </div>
-
-            <p><br></p>
-            <h3><b>T'atreveixes a crear el teu propi truc?</b></h3>
         </div>
-        <p style="color:lightgray; font-size: 70%;"> (c) Josep Mulet Pol (2022)</p>
 
-       
+        <p><br></p>
+        <h3 style="color:lightyellow;"><b>T'atreveixes a crear el teu propi truc?</b></h3>
+
+
     </div>
+    <p style="color:lightgray; font-size: 70%;"> (c) Josep Mulet Pol (2022)</p>
 
-        <script>
-            (function() {
-                var $magic_interact_panel = document.querySelector("#magic_interact_panel");
-                var steps = document.querySelectorAll("#magic_steps li");
-                var nsteps = steps.length;
-                for(var i=0; i<nsteps; i++){
-                    var el = steps[i];
-                    el.dataset.index = i+"";
-                    if(i > 0) {
-                        el.style.opacity = 0;
-                    }
-                    console.log(el);
-                    if(i < nsteps) { 
-                        var btn = document.createElement("button");
-                        btn.style["margin-left"]="10px";
-                        btn.style["float"]="right";
-                        btn.innerHTML = "&#8594;";
-                        btn.classList.add("btn");
-                        btn.classList.add("btn-secondary"); 
-                        btn.addEventListener("click", function(evt){ 
-                            var currentP = evt.currentTarget.parentElement;
-                            var currentBtn = evt.currentTarget;
-                            var pos = parseInt(currentP.dataset.index);
-                            //remove this button and link to the next one
-                            currentBtn.style.opacity = 0; 
-                            var nextPos = pos+1; 
-                            if(pos == nsteps-1) {
-                                // show input
-                                var mip = $magic_interact_panel;
-                                mip.style.opacity=1;
-                            } else {
-                                var nextP = document.querySelector('#magic_steps  li[data-index="'+nextPos+'"]'); 
-                                nextP.style.opacity = 1;
-                            }
-                        }); 
-                        el.append(btn);
-                    }  
-                }; // end loop steps
-                
-                document.querySelector("#magic_done").addEventListener("click", function(evt) {
-                    var valor = parseInt(document.querySelector("#magic_res").value);
-                    document.querySelector("#magic_predict_panel").style.opacity=1;
-                    var predict = (valor-1)/4.0;
-                    if(predict != Math.floor(predict)) {
-                        document.querySelector("#magic_predict").innerHTML = "No puc saber el teu nombre. Per favor, repeteix el joc i fes les operacions que et demano correctament.";
-                        document.querySelector("#magic_predict").style.color = "#FFBBBB";
+
+</div>
+
+<script>
+    (function() {
+        var $magic_interact_panel = document.querySelector("#magic_interact_panel");
+        var steps = document.querySelectorAll("#magic_steps li");
+        var nsteps = steps.length;
+        for (var i = 0; i < nsteps; i++) {
+            var el = steps[i];
+            el.dataset.index = i + "";
+            if (i > 0) {
+                el.style.opacity = 0;
+            }
+            console.log(el);
+            if (i < nsteps) {
+                var btn = document.createElement("button");
+                btn.style["margin-left"] = "10px";
+                btn.innerHTML = "→";
+                btn.classList.add("btn");
+                btn.classList.add("btn-secondary");
+                btn.addEventListener("click", function(evt) {
+                    var currentP = evt.currentTarget.parentElement;
+                    var currentBtn = evt.currentTarget;
+                    var pos = parseInt(currentP.dataset.index);
+                    //remove this button and link to the next one
+                    currentBtn.style.opacity = 0;
+                    var nextPos = pos + 1;
+                    if (pos == nsteps - 1) {
+                        // show input
+                        var mip = $magic_interact_panel;
+                        mip.style.opacity = 1;
                     } else {
-                        document.querySelector("#magic_predict").innerHTML = "El nombre que havies pensat és el " + predict.toFixed(0);
-                        document.querySelector("#magic_predict").style.color = "lightyellow";
-                        document.querySelector("#magic_reveal").style.opacity=1;
+                        var nextP = document.querySelector('#magic_steps  li[data-index="' + nextPos + '"]');
+                        nextP.style.opacity = 1;
                     }
                 });
+                el.append(btn);
+            }
+        }; // end loop steps
 
-                document.querySelector("#magic_repeat").addEventListener("click", function(evt) {
-                    
-                    $magic_interact_panel.style.opacity = 0;
-                    document.querySelector("#magic_predict").innerHTML = "";
-                    document.querySelector("#magic_res").value = 0;
-                    document.querySelector("#magic_predict_panel").style.opacity = 0;
-                    document.querySelector("#magic_reveal").style.opacity = 0;
-                    for(var i=0; i<nsteps; i++){
-                        var el = steps[i]; 
-                        el.querySelector("button").style.opacity=1;
-                        if(i > 0) {
-                            el.style.opacity = 0;
-                        } else {
-                            el.style.opacity = 1;
-                        }
-                    }
-                });
+        document.querySelector("#magic_done").addEventListener("click", function(evt) {
+            var valor = parseInt(document.querySelector("#magic_res").value);
+            document.querySelector("#magic_predict_panel").style.opacity = 1;
+            var predict = (valor - 1) / 4.0;
+            if (predict != Math.floor(predict)) {
+                document.querySelector("#magic_predict").innerHTML = "No puc saber el teu nombre. Per favor, repeteix el joc i fes les operacions que et demano correctament.";
+                document.querySelector("#magic_predict").style.color = "#FFBBBB";
+            } else {
+                document.querySelector("#magic_predict").innerHTML = "El nombre que havies pensat és el " + predict.toFixed(0);
+                document.querySelector("#magic_predict").style.color = "lightyellow";
+                document.querySelector("#magic_reveal").style.opacity = 1;
+            }
+        });
 
-            })();
-        </script>
+        document.querySelector("#magic_repeat").addEventListener("click", function(evt) {
+
+            $magic_interact_panel.style.opacity = 0;
+            document.querySelector("#magic_predict").innerHTML = "";
+            document.querySelector("#magic_res").value = 0;
+            document.querySelector("#magic_predict_panel").style.opacity = 0;
+            document.querySelector("#magic_reveal").style.opacity = 0;
+            for (var i = 0; i < nsteps; i++) {
+                var el = steps[i];
+                el.querySelector("button").style.opacity = 1;
+                if (i > 0) {
+                    el.style.opacity = 0;
+                } else {
+                    el.style.opacity = 1;
+                }
+            }
+        });
+
+    })();
+</script>
     </body>
 </html>

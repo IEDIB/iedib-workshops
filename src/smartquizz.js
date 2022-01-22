@@ -214,6 +214,15 @@ window.IB.sd =  window.IB.sd || {};
             smarts[i].dataset.active = "1";
             var idAvaluacio = smarts[i].id;
             console.log(idAvaluacio, hasIAPace);
+            // Missatge al principi
+            var ah3= document.createElement("h4");
+            ah3.innerText= "Avaluació inicial";
+            var ap = document.createElement("p");
+            ap.innerText = "Dedica uns instants a contestar aquestes preguntes. D'aquesta forma podrem adaptar millor els continguts als teus coneixements.";
+            smarts[i].prepend(ap);
+            smarts[i].prepend(ah3);
+            
+
             if(idAvaluacio && hasIAPace) {
                 var persistData = IB.iapace.loadInitialEval(idAvaluacio);
                 if (persistData) { 
