@@ -84,7 +84,7 @@ fs.readdirSync(src).forEach( (file) => {
          + code 
     }
 
-    code = "window.IB = window.IB || {}; window.IB.sd = window.IB.sd || {}; "+ code
+    code = "window.IB = window.IB || {}; window.IB.sd = window.IB.sd || {}; "+ code
 
     let target = path.join(dst, file.replace(".js", ".min.js"));
     fs.writeFileSync(target, code, {encoding:'utf8'});
@@ -97,7 +97,7 @@ fs.readdirSync(src).forEach( (file) => {
 if(allcss.length) {
     // add css
     all.unshift(`
-    window.IB = window.IB || {}; window.IB.sd = window.IB.sd || {}; 
+    window.IB = window.IB || {}; window.IB.sd = window.IB.sd || {}; 
     !function(){if(document.getElementById("sd_css_all")){return;}; var l = '${allcss}'; var s = document.createElement('style'); s.type = 'text/css'; s.innerHTML = l; s.id="sd_css_all"; document.getElementsByTagName('head')[0].appendChild(s);}();
     `)
 }
@@ -125,7 +125,7 @@ Object.keys(categories).forEach( (catname) => {
     var listCode = categories[catname].code;
     var listCss= categories[catname].css;
     
-    let code = "window.IB = window.IB || {}; window.IB.sd = window.IB.sd || {};";
+    let code = "window.IB = window.IB || {}; window.IB.sd = window.IB.sd || {};";
     if(listCss.length) {
         code += `
         !function(){if(document.getElementById("sd_css_${catname}")){return;}; var l = '${listCss.join(" ")}'; var s = document.createElement('style'); s.type = 'text/css'; s.innerHTML = l; s.id="sd_css_${catname}"; document.getElementsByTagName('head')[0].appendChild(s);}();
