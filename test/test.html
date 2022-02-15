@@ -9,9 +9,18 @@
         <script src="../src/reader.js"></script>
     </head>
 <body>
+    <div class="no-overflow">
+        asfsdsdsas
+        <button id="micro">Micro</button>
+    </div>
     <p>asda</p>
 </body>
 </html>
 <script>
     IB.reader({'ca-ES':'HOLA', 'es-ES':'HOLA'});
+    document.querySelector("#micro").addEventListener("click", function(){
+        IB.speechRecognition(function(text, c){
+            console.log(text, c);
+        }, 'ca-ES');
+    });
 </script>

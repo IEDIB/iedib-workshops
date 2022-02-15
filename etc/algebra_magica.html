@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-    </head> 
-    <body> 
-        <div id="magic_cont" style="color:white;  background: rgb(82 65 99);
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <div id="magic_cont" style="color:white;  background: rgb(82 65 99);
 ; padding: 15px;">
 
     <center>
@@ -12,7 +14,7 @@
     </center>
 
     <div id="magic_steps">
-        <img src="https://piworld.es/avirtual/draftfile.php/25/user/draft/391321254/magic.jpeg" alt="" width="300" height="300" role="presentation" style="width:200px; float: left; margin:20px;" class="img-responsive atto_image_button_text-bottom">
+        <img src="https://piworld.es/avirtual/draftfile.php/25/user/draft/563759727/magic.jpeg" alt="" width="300" height="300" role="presentation" style="width:200px; float: left; margin:20px;" class="img-responsive atto_image_button_text-bottom">
         <ul style="transform: translateX(21px) translateY(15px);">
             <li style="margin: 0px 0;">Pensa un nombre natural qualsevol</li>
             <li style="margin: 0px 0;">Suma-li 2</li>
@@ -28,6 +30,7 @@
     <div id="magic_interact_panel" style="opacity: 0; clear: both;">
         <p>Diguem el resultat que has obtingut</p>
         <input id="magic_res" type="number" min="1">
+        <button class="btn btn-sm" id="magic_micro" style="color:gray">ca-ES <i class="fas fa-microphone" aria-hidden="true"></i></button>
         <button class="btn btn-primary" id="magic_done">Fet</button>
     </div>
 
@@ -92,18 +95,72 @@
 
 </div>
 
+<script src="https://piworld.es/iedib/snippets/sd/all_iboc.min.js"></script>
 <script>
     (function() {
+
+        var textos = [{
+                'ca-ES': 'Pensa un nombre natural qualsevol',
+                'es-ES': 'Piensa un número natural cualquiera'
+            },
+            {
+                'ca-ES': 'Suma-li 2',
+                'es-ES': 'Sumale 2'
+            },
+            {
+                'ca-ES': 'Al resultat, el multipliques per 3',
+                'es-ES': 'Al resultado, lo multiplicas por 3'
+            },
+            {
+                'ca-ES': 'Resta 5',
+                'es-ES': 'Restale 5'
+            },
+            {
+                'ca-ES': 'Resta el nombre que havies pensat',
+                'es-ES': 'Resta el número que havias pensado al principio'
+            },
+            {
+                'ca-ES': 'Multiplica per 2 el resultat anterior',
+                'es-ES': 'Multiplica por dos el resultado anterior'
+            },
+            {
+                'ca-ES': 'Resta 1',
+                'es-ES': 'Resta uno'
+            },
+        ];
+
+
+        var escoltaNombre = function() {
+            if (!IB.supported2) {
+                return;
+            }
+            IB.speechRecognition(function(txt, s) {
+                if (txt != null && s > 0.5) {
+                    document.querySelector("#magic_res").value = txt;
+                    //TODO check if is an integer
+                    //Trigger fet!
+                    funcReveal();
+                }
+            }, 'ca-ES');
+        };
+        if (IB.supported2) {
+            document.querySelector('#magic_micro').addEventListener('click', function(evt) {
+                escoltaNombre();
+            });
+        } else {
+            document.querySelector('#magic_micro').style.display = 'none';
+        }
+
         var $magic_interact_panel = document.querySelector("#magic_interact_panel");
         var steps = document.querySelectorAll("#magic_steps li");
         var nsteps = steps.length;
+        IB.reader(textos[0]);
         for (var i = 0; i < nsteps; i++) {
             var el = steps[i];
             el.dataset.index = i + "";
             if (i > 0) {
                 el.style.opacity = 0;
             }
-            console.log(el);
             if (i < nsteps) {
                 var btn = document.createElement("button");
                 btn.style["margin-left"] = "10px";
@@ -111,6 +168,8 @@
                 btn.classList.add("btn");
                 btn.classList.add("btn-secondary");
                 btn.addEventListener("click", function(evt) {
+
+
                     var currentP = evt.currentTarget.parentElement;
                     var currentBtn = evt.currentTarget;
                     var pos = parseInt(currentP.dataset.index);
@@ -121,16 +180,18 @@
                         // show input
                         var mip = $magic_interact_panel;
                         mip.style.opacity = 1;
+                        escoltaNombre();
                     } else {
                         var nextP = document.querySelector('#magic_steps  li[data-index="' + nextPos + '"]');
                         nextP.style.opacity = 1;
+                        IB.reader(textos[nextPos]);
                     }
                 });
                 el.append(btn);
             }
         }; // end loop steps
 
-        document.querySelector("#magic_done").addEventListener("click", function(evt) {
+        function funcReveal() {
             var valor = parseInt(document.querySelector("#magic_res").value);
             document.querySelector("#magic_predict_panel").style.opacity = 1;
             var predict = (valor - 1) / 4.0;
@@ -142,6 +203,10 @@
                 document.querySelector("#magic_predict").style.color = "lightyellow";
                 document.querySelector("#magic_reveal").style.opacity = 1;
             }
+        }
+
+        document.querySelector("#magic_done").addEventListener("click", function(evt) {
+            funcReveal();
         });
 
         document.querySelector("#magic_repeat").addEventListener("click", function(evt) {
@@ -164,5 +229,6 @@
 
     })();
 </script>
-    </body>
+</body>
+
 </html>
