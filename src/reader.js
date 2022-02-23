@@ -1,4 +1,25 @@
 (function(modul){
+    var NUMBERS_MAP = {
+        "u": 1,
+        "un": 1,
+        "uno": 1,
+        "dos": 2,
+        "tres": 3,
+        "quatre": 4,
+        "cuatro": 4,
+        "cinc": 5,
+        "cinco": 5,
+        "sis": 6,
+        "seis": 6,
+        "siete": 7,
+        "set": 7,
+        "vuit": 8,
+        "ocho": 8,
+        "nou": 9,
+        "nueve": 9,
+        "diez": 10,
+        "deu": 10
+    };
     // Check of voice speak support in current browser
     var synth = window.speechSynthesis;
     var supported = synth != null && window.SpeechSynthesisUtterance != null;
@@ -31,37 +52,39 @@
         });
         voices_avail = window.speechSynthesis.getVoices();
         
-        //Add a mute/play button to stop sounds
-        var mainEl = document.querySelector('.no-overflow');
-        mainEl.style.position = 'relative';
-        if(mainEl) {
-            var spanEl = document.createElement("span");
-            spanEl.style.position='absolute';
-            spanEl.style.right='10px';
-            spanEl.style.fontSize='125%';
-            spanEl.style.color='lightgray';
-            spanEl.style.top='0';
-            spanEl.style.cursor='pointer';
-            spanEl.title = "Desconnecta la veu";
-            var iconEl = document.createElement("i");
-            iconEl.classList.add('fas', 'fa-volume');
-            spanEl.append(iconEl);
-            mainEl.append(spanEl);
-            spanEl.addEventListener("click", function(evt){
-                evt.preventDefault();
-                if(volume_on) {
-                    window.speechSynthesis.cancel();
-                    iconEl.classList.remove('fa-volume');
-                    iconEl.classList.add('fa-volume-mute');
-                    spanEl.title = "Desconnecta la veu";
-                } else {
-                    iconEl.classList.add('fa-volume');
-                    iconEl.classList.remove('fa-volume-mute');
-                    spanEl.title = "Activa la veu";
-                }
-                volume_on = !volume_on;
-            });
-        }  
+        if(IB.SHOW_MUTE_BTN) {
+            //Add a mute/play button to stop sounds
+            var mainEl = document.querySelector('.no-overflow');
+            mainEl.style.position = 'relative';
+            if(mainEl) {
+                var spanEl = document.createElement("span");
+                spanEl.style.position='absolute';
+                spanEl.style.right='10px';
+                spanEl.style.fontSize='125%';
+                spanEl.style.color='lightgray';
+                spanEl.style.top='0';
+                spanEl.style.cursor='pointer';
+                spanEl.title = "Desconnecta la veu";
+                var iconEl = document.createElement("i");
+                iconEl.classList.add('fas', 'fa-volume');
+                spanEl.append(iconEl);
+                mainEl.append(spanEl);
+                spanEl.addEventListener("click", function(evt){
+                    evt.preventDefault();
+                    if(volume_on) {
+                        window.speechSynthesis.cancel();
+                        iconEl.classList.remove('fa-volume');
+                        iconEl.classList.add('fa-volume-mute');
+                        spanEl.title = "Desconnecta la veu";
+                    } else {
+                        iconEl.classList.add('fa-volume');
+                        iconEl.classList.remove('fa-volume-mute');
+                        spanEl.title = "Activa la veu";
+                    }
+                    volume_on = !volume_on;
+                });
+            }  
+        }
     };
 
     var langs = ['ca-ES', 'es-ES'];
@@ -117,6 +140,9 @@
         recognition.start();
         recognition.onresult = function(event) {
             var res = event.results[0][0].transcript; 
+            if(res && NUMBERS_MAP[res]) {
+                res = ""+ NUMBERS_MAP[res.toLowerCase().trim()];
+            }
             var confidence = event.results[0][0].confidence;
             cb && cb(res, confidence);
         };

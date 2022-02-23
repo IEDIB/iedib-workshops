@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8">
+    
+</head>
+<body>
+
+    
+    <div id="box73" role="plotme" style="width:550px; height: 450px; margin:auto;" data-plt-bb="-5, 10, -8, 7" 
+        data-plt-fun="x*(-x^2+3),f,blue,3::sin(sqrt(x)),,red" data-plt-point="-7.5,2.5,P,blue,5"></div>
+
+
+        <div id="g41" role="plotme" style="margin:auto; width:400px; height:300px;" data-plt-bb="-5,5,-2,10">
+            <script type="text/jessiecode">
+            f = functiongraph('x*x+1') ``strokeWidth: 3´´;
+            integral([0,2], f);
+            </script>
+        </div>
+
+
+        <div id="g53" role="plotme" style="margin:auto; width:400px; height:300px;" data-plt-bb="-5,5,-5,10"
+        data-plt-between="g2,f2">
+            <script type="text/jessiecode">
+            f2 = functiongraph('x*x+1',-1,2) ``strokeWidth: 3´´;
+            g2 = functiongraph('x+3',-1,2) ``strokeWidth: 3´´;
+            f = functiongraph('x*x+1') ``strokeWidth: 1´´;
+            g = functiongraph('x+3') ``strokeWidth: 1´´;
+            P_1 = point(-1,2) ``fixed: true, size:3´´;
+            P_2 = point(2,5) ``fixed: true, size:3´´;   
+            text(0,0,function(){ return '\\( e^x \\)';});
+            </script>
+        </div>
+
+    <script src="../build/plotme.min.js"></script>
+</body>
+
+</html>
