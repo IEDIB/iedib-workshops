@@ -217,7 +217,7 @@ window.IB.sd =  window.IB.sd || {};
             // Missatge al principi
             var ah3= document.createElement("h4");
             ah3.innerText= "Avaluació inicial";
-            ah3.style.padding = "0";
+            ah3.style["margin-top"] = "initial";
             var ap = document.createElement("p");
             ap.innerText = "Dedica uns instants a contestar aquestes preguntes. D'aquesta forma podrem adaptar millor els continguts als teus coneixements.";
             smarts[i].prepend(ap);

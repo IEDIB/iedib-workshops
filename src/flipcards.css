@@ -1,0 +1,99 @@
+.fc_wrap {
+    margin: auto;
+    position: relative;
+    height: 100%;
+    max-width: 800px;
+    min-height: 500px;
+    padding-bottom: 20px;
+  }
+  .fc_capsalera {
+    display: flex;
+    flex-direction: row;
+    align-items: right;
+    color: gray;
+  }
+  .fc_game {
+    transform-style: preserve-3d;
+    perspective: 500px;
+    min-height: 100%;
+    height: 100%;
+  }
+  @keyframes matchAnim {
+    0% {
+      background: #bcffcc;
+    }
+    100% {
+      background: white;
+    }
+  }
+  .carta { 
+    float: left;
+    width: 160px;
+    height: 160px;
+    padding: 5px;
+    text-align: center;
+    display: block;
+    perspective: 500px;
+    position: relative;
+    cursor: pointer;
+    z-index: 50;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    font-size: 80%;
+  } 
+  .carta .inside {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transform-style: preserve-3d;
+    transition: 0.4s ease-in-out;
+    background: white;
+  }
+  .carta .inside.picked, .carta .inside.matched {
+    transform: rotateY(180deg);
+  }
+  .carta .inside.matched {
+    animation: 1s matchAnim ease-in-out;
+    animation-delay: 0.4s;
+  }
+  .carta .front, .carta .back {
+    border: 1px solid black;
+    backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    box-shadow: 1px 1px gray;
+  }
+  .carta .front img, .carta .back img {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+    max-height: 100%;
+    position: absolute;
+    top: 20%;
+    left: 0;
+  }
+  .carta .front {
+    transform: rotateY(-180deg);
+    background: rgb(94,113,255);
+  }
+  @media (max-width: 800px) {
+    .carta .front {
+      padding: 5px;
+    }
+  }
+  .carta .back {
+    transform: rotateX(0);
+    background: ghostwhite;
+  }
+  .carta .back:hover { 
+    background: rgb(251, 250, 244);
+  }
+  @media (max-width: 800px) {
+    .carta .back {
+      padding: 10px;
+    }
+  }
+  
