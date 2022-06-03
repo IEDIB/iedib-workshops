@@ -1,5 +1,12 @@
 (function () {
 
+    if(!window.iedibAPI) {
+        console.error("REQUIRES iedibAPI loaded in page");
+    }
+
+    var pageInfo = iedibAPI.getPageInfo() || {};
+    pageInfo.rank_name = "game_cards_geo_1bat";
+
     var reflowLatex = function () {
         if (window.MathJax) {
             window.MathJax.typesetPromise && window.MathJax.typesetPromise();
@@ -76,6 +83,9 @@
             this.paused = false;
             this.guess = null;
             this.binding();
+
+            // calls the update UI ranking
+            this.listRanking();
         },
 
         binding: function () {
@@ -155,12 +165,93 @@
                 if (cronoInterval) {
                     clearInterval(cronoInterval);
                     cronoInterval = null;
+                    // Calcula la puntuació
+                    var score = 10000 - 500*turns;
+                    if(score <0) {
+                        score = 0;
+                    }
+                    score = Math.floor(score*(300/(_.seconds+1)));
+                    var misc = JSON.stringify({seconds: _.seconds, girs: turns});
+                    var payload = JSON.parse(JSON.stringify(pageInfo));
+                    payload.rank_misc = misc;
+                    payload.rank_score = score;
+                    _.updateRanking(payload);
+                    _.seconds = 0;
+                    turns = 0;
                 }
                 $crono.html("");
                 _.reset();
             }, 1000);
         },
 
+        updateRanking: function(payload) {
+            var _ = Memory;
+            $.ajax({
+                type:"POST", // la variable type guarda el tipo de la peticion GET,POST,..
+                url:"https://piworld.es/iedibapi/ranking/update", //url guarda la ruta hacia donde se hace la peticion
+                data: payload, // data recive un objeto con la informacion que se enviara al servidor
+                dataType: "json",
+                success:function(datos){ //success es una funcion que se utiliza si el servidor retorna informacion
+                   console.log(datos);
+                   _.listRanking();
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+
+        },
+
+        listRanking: function() {
+            var _ = Memory; 
+            $.ajax({ 
+                type:"POST", // la variable type guarda el tipo de la peticion GET,POST,..
+                url:"https://piworld.es/iedibapi/ranking/list", //url guarda la ruta hacia donde se hace la peticion
+                data: pageInfo, // data recive un objeto con la informacion que se enviara al servidor
+                dataType: "json",
+                success:function(datos){ //success es una funcion que se utiliza si el servidor retorna informacion
+                    if(Array.isArray(datos)) {
+                        if(datos.length > 0) {
+                            $('#first_person').html(datos[0].full_name);
+                            $('#first_person').attr('title', datos[0].rank_score + ' punts');
+                        }
+                        if(datos.length > 1) {
+                            $('#second_person').html(datos[1].full_name);
+                            $('#second_person').attr('title', datos[1].rank_score + ' punts');
+                        } else {
+                            $('#second_person').html('----------------------');
+                        }
+                        if(datos.length > 2) {
+                           $('#third_person').html(datos[2].full_name);
+                           $('#third_person').attr('title', datos[2].rank_score + ' punts');
+                        } else {
+                            $('#third_person').html('----------------------');
+                        }
+
+                        // find yourself in the list (which is your pos)?
+                        var i=0;
+                        var found = false;
+                        var len = datos.length;
+                        while(i<len && !found) {
+                            if(pageInfo.userFullname == datos[i].full_name) {
+                                found = true;
+                            } 
+                            i += 1;
+                        }
+                        if(found) {
+                            $('#you_person').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Estàs en posició ' + i + 'a.');
+                        }
+
+                    } else {
+                        console.error(datos);
+                    }
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+
+        },
         onGameStart: function (ev) {
             var _ = Memory;
             // start crono
