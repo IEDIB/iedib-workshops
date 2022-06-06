@@ -87,6 +87,7 @@
   .carta .back {
     transform: rotateX(0);
     background: ghostwhite;
+    overflow: hidden;
   }
   .carta .back:hover { 
     background: rgb(251, 250, 244);

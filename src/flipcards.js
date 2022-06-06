@@ -210,7 +210,16 @@
                 data: pageInfo, // data recive un objeto con la informacion que se enviara al servidor
                 dataType: "json",
                 success:function(datos){ //success es una funcion que se utiliza si el servidor retorna informacion
+                     
                     if(Array.isArray(datos)) {
+                        // Remove those who have no rank_score
+                        var k = datos.length
+                        while (k--) { 
+                            if(datos[k].rank_score <= 0) { 
+                                datos.splice(k, 1);
+                            } 
+                        }
+
                         if(datos.length > 0) {
                             $('#first_person').html(datos[0].full_name);
                             $('#first_person').attr('title', datos[0].rank_score + ' punts');
@@ -238,7 +247,7 @@
                             } 
                             i += 1;
                         }
-                        if(found) {
+                        if(found && i > 3) {
                             $('#you_person').html('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Estàs en posició ' + i + 'a.');
                         }
 
@@ -276,9 +285,15 @@
         },
         reset: function (ev) {
             var _ = Memory;
-            _.$restartButton.show();
+            _.$restartButton.hide();
             _.$startButton.show();
+            // Stop timer if possible
+            if (cronoInterval != null) {
+                clearInterval(cronoInterval);
+            }
+            _.seconds = 0;
             turns = 0;
+            $crono.html("");
             $girs.html("&nbsp;" + turns + "&nbsp;");
             if (ev && ev.preventDefault) {
                 ev.preventDefault();
@@ -356,7 +371,7 @@
         },
         {
             id: 4,
-            desc: "" + bl + "\\vec v(1,2)" + el
+            desc: '<img src="https://piworld.es/iedib/img/flipcards/fp0001.png" style="width:95%;margin-top:-22px;">'
         },
         {
             id: 5,
@@ -365,7 +380,7 @@
         },
         {
             id: 5,
-            desc: "" + bl + "y=-x+2" + el
+            desc: '<img src="https://piworld.es/iedib/img/flipcards/fp0002.png" style="width:95%;margin-top:-22px;">'
         },
         {
             id: 6,
